@@ -196,7 +196,7 @@ footer p{margin:4px 0}
       <a class="btn" href="https://item.rakuten.co.jp/tire-wheel-plaza/01-02-001-0022-2967/" target="_blank" rel="noreferrer">商品ページを開く ↗ <span style="font-weight:400;color:var(--dim)">item.rakuten.co.jp</span></a>
     </div>
 
-    <div class="chart-head"><h3>価格の推移グラフ</h3><span class="hint">11/22 12:42 〜 11/26 10:33 ・ 全59回チェック ・ 横軸は3時間ごと（00:00 / 03:00 / 06:00 / 09:00 / 12:00 / 15:00 / 18:00 / 21:00）の時刻</span></div>
+    <div class="chart-head"><h3>価格の推移グラフ</h3><span class="hint">11/22 12:42 〜 11/26 10:33 ・ 全59回チェック ・ 横軸は6時間ごと（00:00 / 06:00 / 12:00 / 18:00）の時刻</span></div>
     <div class="legend"><span><i style="background:var(--chart-low)"></i>最安単価（1本）</span><span><i style="background:var(--chart-med)"></i>相場・中央値（1本）</span><span>縦軸は円（目盛りはデータ範囲に合わせています）</span></div>
     <div class="chartbox" id="chart-vrx3" role="img" aria-label="ブリザック VRX3の価格推移グラフ。最安単価は4,250円から11,545円の間で推移し、最新は7,000円。相場は6,955円から15,739円の間で推移し、最新は7,320円。"></div>
     <div class="stats" id="stats-vrx3"></div>
@@ -255,7 +255,7 @@ footer p{margin:4px 0}
       <a class="btn" href="https://www.yodobashi.com/product/100000001009456247/" target="_blank" rel="noreferrer">商品ページを開く ↗ <span style="font-weight:400;color:var(--dim)">www.yodobashi.com</span></a>
     </div>
 
-    <div class="chart-head"><h3>価格の推移グラフ</h3><span class="hint">11/22 12:42 〜 11/26 10:33 ・ 全60回チェック ・ 横軸は3時間ごと（00:00 / 03:00 / 06:00 / 09:00 / 12:00 / 15:00 / 18:00 / 21:00）の時刻</span></div>
+    <div class="chart-head"><h3>価格の推移グラフ</h3><span class="hint">11/22 12:42 〜 11/26 10:33 ・ 全60回チェック ・ 横軸は6時間ごと（00:00 / 06:00 / 12:00 / 18:00）の時刻</span></div>
     <div class="legend"><span><i style="background:var(--chart-low)"></i>最安単価（1本）</span><span><i style="background:var(--chart-med)"></i>相場・中央値（1本）</span><span>縦軸は円（目盛りはデータ範囲に合わせています）</span></div>
     <div class="chartbox" id="chart-summer" role="img" aria-label="夏タイヤの価格推移グラフ。最安単価は3,310円から8,000円の間で推移し、最新は6,975円。相場は4,465円から9,475円の間で推移し、最新は8,795円。"></div>
     <div class="stats" id="stats-summer"></div>
@@ -312,7 +312,7 @@ footer p{margin:4px 0}
       <a class="btn" href="https://item.rakuten.co.jp/mytyre001/wbs-wz11556514-4/?variantId=wbs-wz11556514-4" target="_blank" rel="noreferrer">商品ページを開く ↗ <span style="font-weight:400;color:var(--dim)">item.rakuten.co.jp</span></a>
     </div>
 
-    <div class="chart-head"><h3>価格の推移グラフ</h3><span class="hint">11/23 18:35 〜 11/26 10:34 ・ 全54回チェック ・ 横軸は3時間ごと（00:00 / 03:00 / 06:00 / 09:00 / 12:00 / 15:00 / 18:00 / 21:00）の時刻</span></div>
+    <div class="chart-head"><h3>価格の推移グラフ</h3><span class="hint">11/23 18:35 〜 11/26 10:34 ・ 全54回チェック ・ 横軸は6時間ごと（00:00 / 06:00 / 12:00 / 18:00）の時刻</span></div>
     <div class="legend"><span><i style="background:var(--chart-low)"></i>最安単価（1本）</span><span><i style="background:var(--chart-med)"></i>相場・中央値（1本）</span><span>縦軸は円（目盛りはデータ範囲に合わせています）</span></div>
     <div class="chartbox" id="chart-wz1" role="img" aria-label="ブリザック WZ-1の価格推移グラフ。最安単価は10,525円から13,910円の間で推移し、最新は10,525円。相場は10,663円から16,294円の間で推移し、最新は11,750円。"></div>
     <div class="stats" id="stats-wz1"></div>
@@ -445,9 +445,8 @@ function drawChart(id, rows){
     s += '<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="'+border+'" stroke-width="1" stroke-dasharray="3 3"/>';
     s += '<text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end" font-size="12" fill="'+dim+'">¥'+Math.round(v).toLocaleString("ja-JP")+'</text>';
   }
-  // x ticks: detailed time labels every 3 hours (00 / 03 / 06 / 09 / 12 / 15 / 18 / 21 o'clock)
-  var spanH = (t1 - t0) / 3600000;
-  var stepH = spanH > 120 ? 6 : 3;
+  // x ticks: detailed time labels every 6 hours (00 / 06 / 12 / 18 o'clock)
+  var stepH = 6;
   var stepMs = stepH * 3600000;
   var startDay = new Date(t0);
   startDay.setHours(0, 0, 0, 0);
