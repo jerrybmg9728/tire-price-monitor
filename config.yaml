@@ -2,15 +2,12 @@
 
 size: "155/65R14"
 
-# 公開ページのURL（楽天APIの Referer / Origin にも使う。楽天のアプリ設定に同じURLを登録する）
-site_url: "https://jerrybmg9728.github.io/tire-price-monitor/"
-
 # 集計に使う市場（最安値・中央値の対象）
 markets:
   rakuten: true
   yahoo_shopping: true
   yahoo_auction: true
-  amazon: true        # 資格情報が無い間は「未接続」として表示だけ
+  amazon: false       # 対象外（自動取得の手段が無い）
 
 # 全対象に共通する除外キーワード（タイトルに含まれていたら除外）
 common_exclude:
@@ -52,10 +49,8 @@ targets:
 
 # 各市場で1回に取得する件数（多すぎるとAPIの上限に当たる）
 fetch:
-  rakuten_hits: 30
-  yahoo_shopping_results: 50
   yahoo_auction_per_page: 50
-  request_delay_seconds: 1.5
+  request_delay_seconds: 3     # 同じサイトに続けてアクセスしないよう間を空ける
 
 # 履歴の保存上限（スナップショット数。1日2回×3対象で約5年分）
 history_limit: 11000

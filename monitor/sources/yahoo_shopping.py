@@ -1,54 +1,49 @@
-"""Yahoo!ショッピング: 公式「商品検索API（v3）」。環境変数 YAHOO_APP_ID（Client ID）が必要。"""
+"""Yahoo!ショッピング: 検索結果ページに埋め込まれたデータ（__NEXT_DATA__）から出品を読む。キー不要。"""
 from __future__ import annotations
-
-import os
 
 import requests
 
 from monitor.normalize import Raw
-from monitor.sources import SourceResult, error_status, to_int
+from monitor.sources import SourceResult, error_status, get_page, next_data, to_int
 
-API_URL = "https://shopping.yahooapis.jp/ShoppingWebService/V3/itemSearch"
-_SHIPPING_FREE = 2   # shipping.code: 1=設定なし 2=送料無料 3=条件付き送料無料
+SEARCH_URL = "https://shopping.yahoo.co.jp/search"
 
 
-def parse(data: dict) -> list[Raw]:
-    raws = []
-    for h in data.get("hits") or []:
-        if not isinstance(h, dict):
-            continue
-        price = to_int(h.get("price"))
-        if not h.get("name") or not price:
-            continue
-        seller = h.get("seller") if isinstance(h.get("seller"), dict) else {}
-        shipping = h.get("shipping") if isinstance(h.get("shipping"), dict) else {}
-        raws.append(Raw(
-            market="yahoo_shopping",
-            store=str(seller.get("name") or "Yahoo!ショッピング"),
-            title=str(h["name"]),
-            price=price,
-            url=str(h.get("url") or ""),
-            shipping=0 if shipping.get("code") == _SHIPPING_FREE else None,
-        ))
-    return raws
+def _result_items(data: dict) -> list:
+    """検索結果のブロック（type=RESULT）にある出品を集める。"""
+    try:
+        groups = data["props"]["initialState"]["bff"]["searchResults"]["items"]
+    except (KeyError, TypeError) as e:
+        raise ValueError(f"ページの形式が変わった可能性（検索結果が見つからない: {e}）") from e
+    blocks = [b for g in (groups.values() if isinstance(groups, dict) else [groups])
+              for b in (g if isinstance(g, list) else [g]) if isinstance(b, dict)]
+    return [it for b in blocks if b.get("type") == "RESULT"
+            for it in ((b.get("content") or {}).get("items") or [])]
+
+
+def parse(html: str) -> list[Raw]:
+    return [r for r in (_to_raw(it) for it in _result_items(next_data(html)) if isinstance(it, dict)) if r]
+
+
+def _to_raw(it: dict) -> Raw | None:
+    price = to_int(it.get("price"))
+    if not price or not it.get("name"):
+        return None
+    store = it.get("store") if isinstance(it.get("store"), dict) else {}
+    return Raw(
+        market="yahoo_shopping",
+        store=str(store.get("name") or "Yahoo!ショッピング"),
+        title=str(it["name"]),
+        price=price,
+        url=str(it.get("url") or "").split("?")[0],
+        shipping=0 if it.get("freeCondition") == "FREE" else None,
+    )
 
 
 def fetch(target: dict, cfg: dict) -> SourceResult:
-    app_id = os.environ.get("YAHOO_APP_ID", "")
-    if not app_id:
-        return SourceResult("未設定（YAHOO_APP_ID なし）")
-    params = {
-        "appid": app_id,
-        "query": target["query"],
-        "results": cfg["fetch"]["yahoo_shopping_results"],
-        "sort": "+price",
-        "in_stock": "true",
-        "condition": "new",
-    }
     try:
-        resp = requests.get(API_URL, params=params, timeout=20)
-        resp.raise_for_status()
-        return SourceResult("ok", parse(resp.json()))
-    except (requests.RequestException, ValueError) as e:
-        # appid を含むURLをそのまま出さない
+        return SourceResult("ok", parse(get_page(SEARCH_URL, {"p": target["query"]})))
+    except ValueError as e:
+        return SourceResult(f"エラー: {e}")
+    except requests.RequestException as e:
         return SourceResult(error_status(e))

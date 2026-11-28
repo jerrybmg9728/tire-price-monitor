@@ -1,24 +1,18 @@
 """ヤフオク!: 検索結果ページに埋め込まれたデータ（__NEXT_DATA__）から出品を読む。公式APIは無い。"""
 from __future__ import annotations
 
-import json
-import re
 import urllib.parse
 
 import requests
 
 from monitor.normalize import Raw
-from monitor.sources import USER_AGENT, SourceResult, to_int
+from monitor.sources import SourceResult, error_status, get_page, next_data, to_int
 
 SEARCH_URL = "https://auctions.yahoo.co.jp/search/search"
-_NEXT_DATA = re.compile(r'<script id="__NEXT_DATA__" type="application/json">(.*?)</script>', re.S)
 
 
 def parse(html: str) -> list[Raw]:
-    m = _NEXT_DATA.search(html)
-    if not m:
-        raise ValueError("ページの形式が変わった可能性（__NEXT_DATA__ が見つからない）")
-    data = json.loads(m.group(1))
+    data = next_data(html)
     try:
         items = data["props"]["pageProps"]["initialState"]["search"]["items"]["listing"]["items"]
     except (KeyError, TypeError) as e:
@@ -47,10 +41,9 @@ def _to_raw(it: dict) -> Raw | None:
 
 def fetch(target: dict, cfg: dict) -> SourceResult:
     params = {"p": target["query"], "n": cfg["fetch"]["yahoo_auction_per_page"]}
-    url = f"{SEARCH_URL}?{urllib.parse.urlencode(params)}"
     try:
-        resp = requests.get(url, headers={"User-Agent": USER_AGENT, "Accept-Language": "ja"}, timeout=20)
-        resp.raise_for_status()
-        return SourceResult("ok", parse(resp.text))
-    except (requests.RequestException, ValueError) as e:
+        return SourceResult("ok", parse(get_page(SEARCH_URL, params)))
+    except ValueError as e:
         return SourceResult(f"エラー: {e}")
+    except requests.RequestException as e:
+        return SourceResult(error_status(e))

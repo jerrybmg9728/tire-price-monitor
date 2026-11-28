@@ -54,7 +54,7 @@ def _offers_table(snap: dict) -> str:
     rows = []
     for i, o in enumerate(snap["offers"], 1):
         qty = "4本セット" if o["quantity"] == 4 else f'{o["quantity"]}本'
-        note = "（本数は価格から推定）" if o["inferred"] else ""
+        note = "<br>（本数は価格から推定）" if o["inferred"] else ""
         ship = "送料無料" if o["shipping"] == 0 else "送料別・要確認"
         rows.append(
             f'<tr><td class="n">{i}</td><td><a href="{safe_url(o["url"])}" target="_blank" rel="noopener noreferrer">{E(o["title"])}</a>'
@@ -169,7 +169,7 @@ header{border-bottom:1px solid var(--ink);padding-bottom:16px}
 .chart{border:1px solid var(--line);margin-top:8px;overflow-x:auto}.chart svg{display:block;width:100%;min-width:560px;height:auto}
 .legend{font-size:12px;color:var(--dim)}.legend i{display:inline-block;width:20px;height:3px;vertical-align:middle;margin:0 4px 0 12px}
 .l1{background:var(--accent)}.l2{background:var(--ink)}.l3{background:var(--dim);opacity:.5}
-.offers{width:100%;border-collapse:collapse;table-layout:fixed}.offers td{overflow-wrap:anywhere}.offers .r{width:9.5em}.offers td{border-top:1px solid var(--line);padding:10px 6px;vertical-align:top}
+.offers{width:100%;border-collapse:collapse;table-layout:fixed}.offers td{overflow-wrap:anywhere}.offers .r{width:10.5em}.offers td{border-top:1px solid var(--line);padding:10px 6px;vertical-align:top}
 .offers .n{width:28px;color:var(--dim)}body{overflow-wrap:anywhere}.offers .r{text-align:right;white-space:nowrap}.offers .muted{font-size:12px}
 .mstatus{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}
 .mstatus .ok b{color:var(--ok)}.mstatus .warn b{color:var(--warn)}.mstatus .err b{color:var(--accent)}
@@ -225,8 +225,8 @@ TEMPLATE = """<!doctype html>
 <title>タイヤ価格監視 {size}</title><style>{css}</style></head>
 <body><div class="wrap">
 <header><h1>タイヤ価格監視 <span class="muted">{size}</span></h1>
-<p class="muted">楽天市場・Yahoo!ショッピング・ヤフオク!・Amazon の新品出品を1日2回（朝8時半・夕方18時半ごろ）自動で集計しています。
-価格は税込・1本あたりに換算（送料は含めず、送料無料かどうかを表示）。</p>
+<p class="muted">楽天市場・Yahoo!ショッピング・ヤフオク! の新品出品を1日2回（朝8時半・夕方18時半ごろ）自動で集計しています。
+価格は税込・1本あたりに換算（送料は含めず、送料無料かどうかを表示）。Amazon は対象外です。</p>
 <p><b>データ時点：{checked}</b>（日本時間）</p></header>
 <div class="cards">{cards}</div>
 {sections}
@@ -234,9 +234,6 @@ TEMPLATE = """<!doctype html>
 <p>集計ルール：サイズと銘柄が一致する新品だけを対象にし、ホイール付き・中古・予約品は除外。ヤフオク!は即決価格のみで入札中の出品は除外。
 1本あたりが妥当な範囲を外れる価格は読み取りミスとして除外しています。</p>
 <p>表示価格はチェック時点のものです。購入前に商品ページで在庫・送料・製造年をご確認ください。</p>
-<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
-<span style="margin:15px 15px 15px 15px"><a href="https://developer.yahoo.co.jp/sitemap/">Webサービス by Yahoo! JAPAN</a></span>
-<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
 </footer></div>
 <script type="application/json" id="history">{data}</script>
 <script>{js}</script>

@@ -2,33 +2,33 @@
  "targets": {
   "vrx3": [
    {
-    "checkedAt": "2026-11-28T12:48:10+09:00",
+    "checkedAt": "2026-11-28T13:02:42+09:00",
     "lowestUnitPrice": 6600,
-    "top3AvgUnitPrice": 6890,
-    "medianUnitPrice": 7138,
-    "offerCount": 6,
+    "top3AvgUnitPrice": 6753,
+    "medianUnitPrice": 7480,
+    "offerCount": 75,
     "status": "ok",
     "degraded": []
    }
   ],
   "summer": [
    {
-    "checkedAt": "2026-11-28T12:48:10+09:00",
-    "lowestUnitPrice": 3380,
-    "top3AvgUnitPrice": 3380,
-    "medianUnitPrice": 4150,
-    "offerCount": 9,
+    "checkedAt": "2026-11-28T13:02:42+09:00",
+    "lowestUnitPrice": 3310,
+    "top3AvgUnitPrice": 3310,
+    "medianUnitPrice": 5230,
+    "offerCount": 53,
     "status": "ok",
     "degraded": []
    }
   ],
   "wz1": [
    {
-    "checkedAt": "2026-11-28T12:48:10+09:00",
+    "checkedAt": "2026-11-28T13:02:42+09:00",
     "lowestUnitPrice": 8000,
     "top3AvgUnitPrice": 9651,
-    "medianUnitPrice": 10975,
-    "offerCount": 18,
+    "medianUnitPrice": 12970,
+    "offerCount": 91,
     "status": "ok",
     "degraded": []
    }

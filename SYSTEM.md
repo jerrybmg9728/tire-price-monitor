@@ -1,7 +1,7 @@
 # タイヤ価格監視 システム仕様
 
 （2026-11-28 作り直し。旧版は Muse 上のAIエージェントが毎時ウェブ調査する方式で、
-1回あたり約154万トークンを使い、最安値が調査ごとに大きく揺れていた。本版はAIを使わない。）
+1回あたり約154万トークンを使い、最安値が調査ごとに大きく揺れていた。本版はAIもAPIキーも使わない。）
 
 ## 1. 構成
 
@@ -16,16 +16,17 @@
 | 表示 | `monitor/render.py` | `index.html` を生成（外部読み込みなしの1ファイル） |
 | 公開 | GitHub Pages（main ブランチ） | `index.html` をそのまま公開 |
 
-## 2. 市場ごとの取得方法
+## 2. 市場ごとの取得方法（キー不要）
 
-| 市場 | 方法 | 必要なもの |
+| 市場 | 読む場所 | 備考 |
 |---|---|---|
-| 楽天市場 | 公式 楽天市場商品検索API（openapi.rakuten.co.jp）。価格の安い順・在庫ありのみ | `RAKUTEN_APP_ID`, `RAKUTEN_ACCESS_KEY`。Referer/Origin に `site_url` を付ける |
-| Yahoo!ショッピング | 公式 商品検索API v3。価格の安い順・在庫あり・新品のみ | `YAHOO_APP_ID` |
-| ヤフオク! | 検索結果ページに埋め込まれたデータ（`__NEXT_DATA__`）を読む。公式APIは無い | なし |
-| Amazon | 公式 Creators API（PA-API 5 の後継）で取得予定。資格情報が無い間は「未接続」 | アソシエイト登録＋Creators API 資格情報 |
+| 楽天市場 | `search.rakuten.co.jp/search/mall/<検索語>/` の `window.__INITIAL_STATE__` → `state.data.ichibaSearch.items`（約45件） | robots.txt で並べ替え（`?s=`）付きURLは禁止のため標準の並び順を読み、こちらで安い順に並べる。売り切れは除く |
+| Yahoo!ショッピング | `shopping.yahoo.co.jp/search?p=<検索語>` の `__NEXT_DATA__` → `bff.searchResults.items` の type=RESULT（約30件） | 送料無料は `freeCondition == "FREE"` |
+| ヤフオク! | `auctions.yahoo.co.jp/search/search?p=<検索語>` の `__NEXT_DATA__` → `search.items.listing.items`（50件） | 公式APIは無い |
+| Amazon | 対象外 | 自動アクセスを強く防いでおり、規約でも禁止 |
 
-Amazon の画面を直接読み取る方法は利用規約に反するため使わない。
+アクセスは1日2回×3対象×3サイト＝1日18回。同じサイトに続けてアクセスしないよう3秒ずつ空ける。
+各サイトの利用規約は自動収集を禁じている可能性がある（未確認）。ブロックされた場合は「エラー」と表示される。
 
 ## 3. 判定ルール（`normalize.judge`）
 
@@ -48,12 +49,10 @@ Amazon の画面を直接読み取る方法は利用規約に反するため使�
 ## 5. 障害時の動き
 
 - 市場ごとに独立して取得する。1つが失敗しても他の市場で集計を続け、ページに「エラー」と表示する
-- エラー表示にAPIキーを含むURLは出さない
-- ヤフオク!のページ形式が変わった場合は「形式が変わった可能性」と表示される（`yahoo_auction.parse` の修正が必要）
+- 検索ページの形式が変わった場合は、その市場に「形式が変わった可能性」と表示される（`monitor/sources/` の該当ファイルの修正が必要）
 - GitHub Actions の定期実行は混雑時に遅れることがある。正常性は `data/latest.json` の `checkedAt` が進んでいるかで判断する
 
 ## 6. 費用
 
 - GitHub Actions：公開リポジトリは無料
-- 楽天・Yahoo!のAPI：無料（呼び出し回数の上限内。1日2回×3対象で十分に余裕がある）
 - AIのトークン：使わない

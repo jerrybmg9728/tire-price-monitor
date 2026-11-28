@@ -5,7 +5,7 @@ from monitor.normalize import Raw
 from monitor.sources import SourceResult
 
 CFG = {
-    "size": "155/65R14", "site_url": "https://x/", "common_exclude": ["中古"],
+    "size": "155/65R14", "common_exclude": ["中古"],
     "markets": {"rakuten": True, "yahoo_shopping": True, "yahoo_auction": False, "amazon": True},
     "fetch": {"request_delay_seconds": 0},
 }

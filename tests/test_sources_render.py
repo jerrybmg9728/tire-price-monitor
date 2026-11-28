@@ -26,25 +26,43 @@ def test_yahoo_auction_parse_changed_page():
         assert "形式が変わった" in str(e)
 
 
+def _next(data):
+    return f'<script id="__NEXT_DATA__" type="application/json" nonce="x">{json.dumps(data)}</script>'
+
+
+def _rakuten_html(items):
+    return f'<script>window.__INITIAL_STATE__ = {json.dumps({"state": {"data": {"ichibaSearch": {"items": items}}}})};window.x=1</script>'
+
+
 def test_yahoo_shopping_parse():
-    data = {"hits": [{"name": "VRX3", "price": 30000, "url": "u", "seller": {"name": "店A"}, "shipping": {"code": 2}},
-                     {"name": "x", "price": 0}]}
-    [r] = yahoo_shopping.parse(data)
-    assert (r.store, r.price, r.shipping) == ("店A", 30000, 0)
+    items = [{"name": "VRX3", "price": 30000, "url": "https://store.shopping.yahoo.co.jp/a/b.html?sc_i=x",
+              "store": {"name": "店A"}, "freeCondition": "FREE"},
+             {"name": "x", "price": 0}, "bad"]
+    data = {"props": {"initialState": {"bff": {"searchResults": {"items": {"1": [
+        {"type": "PAGER"}, {"type": "RESULT", "content": {"items": items}}, {"type": "SALE_PTAH_MODULES"}]}}}}}}
+    [r] = yahoo_shopping.parse(_next(data))
+    assert (r.store, r.price, r.shipping, r.url) == ("店A", 30000, 0, "https://store.shopping.yahoo.co.jp/a/b.html")
 
 
-def test_rakuten_parse_both_formats():
-    v2 = {"Items": [{"itemName": "A", "itemPrice": 34000, "itemUrl": "u", "shopName": "S", "postageFlag": 0}]}
-    v1 = {"Items": [{"Item": {"itemName": "B", "itemPrice": 9000, "itemUrl": "u2", "shopName": "T", "postageFlag": 1}}]}
-    assert rakuten.parse(v2)[0].shipping == 0
-    assert rakuten.parse(v1)[0].shipping is None
+def test_rakuten_parse():
+    items = [{"name": "A", "price": 34000, "url": "https://item.rakuten.co.jp/s/a/?v=1", "isSoldOut": False,
+              "shop": {"name": "S"}, "shipping": {"price": 0}},
+             {"name": "B", "price": 9000, "url": "u", "isSoldOut": True},
+             {"name": "C", "price": "9,000", "url": "u2", "shop": "bad", "shipping": {"price": None}}]
+    rs = rakuten.parse(_rakuten_html(items))
+    assert [(r.title, r.price, r.shipping, r.url) for r in rs] == [
+        ("A", 34000, 0, "https://item.rakuten.co.jp/s/a/"), ("C", 9000, None, "u2")]
 
 
-def test_missing_keys_report_unset(monkeypatch):
-    monkeypatch.delenv("YAHOO_APP_ID", raising=False)
-    monkeypatch.delenv("RAKUTEN_APP_ID", raising=False)
-    assert yahoo_shopping.fetch({"query": "q"}, {}).status.startswith("未設定")
-    assert rakuten.fetch({"query": "q"}, {}).status.startswith("未設定")
+def test_changed_pages_raise():
+    for parse, html in [(rakuten.parse, "<html></html>"), (yahoo_shopping.parse, "<html></html>"),
+                        (yahoo_shopping.parse, _next({"props": {}})),
+                        (rakuten.parse, _rakuten_html(None).replace('"ichibaSearch"', '"other"'))]:
+        try:
+            parse(html)
+            raise AssertionError("should fail")
+        except ValueError as e:
+            assert "形式が変わった" in str(e)
 
 
 def test_error_status_hides_url():
@@ -75,13 +93,9 @@ def test_render_page_escapes_and_shows_values():
     assert "¥8,500" in page and "前回比 −¥500" in page and "2026/11/28 12:31" in page
     assert "<script>alert(1)</script>" not in page and "&lt;script&gt;" in page
     assert "店&lt;b&gt;" in page and "サイズ違い 2件" in page
-    assert "Webサービス by Yahoo! JAPAN" in page   # Yahoo! API の利用条件（クレジット表示）
 
 
 def test_parsers_skip_malformed_rows():
-    assert [r.price for r in rakuten.parse({"Items": ["x", {"itemName": "A", "itemPrice": "1,980"},
-                                                    {"itemName": "B", "itemPrice": None}]})] == [1980]
-    assert [r.price for r in yahoo_shopping.parse({"hits": [None, {"name": "A", "price": 12.5, "seller": "str"}]})] == [12]
     data = {"props": {"pageProps": {"initialState": {"search": {"items": {"listing": {"items": [
         "bad", {"auctionId": "a b", "title": "t", "price": "3,000", "seller": "str", "bidCount": None}]}}}}}}}
     [r] = yahoo_auction.parse(f'<script id="__NEXT_DATA__" type="application/json">{json.dumps(data)}</script>')
