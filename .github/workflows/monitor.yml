@@ -1,0 +1,45 @@
+name: Tire price monitor
+
+on:
+  schedule:
+    - cron: "31 * * * *"    # 毎時31分（UTC表記だが分は同じ）。GitHubの混雑で数分〜十数分遅れることがある
+  workflow_dispatch:         # 手動実行も可
+
+permissions:
+  contents: write            # data/ と index.html をコミットするため
+
+concurrency:
+  group: tire-price-monitor  # 前の回が終わる前に次が始まらないようにする
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Check prices
+        env:
+          RAKUTEN_APP_ID: ${{ secrets.RAKUTEN_APP_ID }}
+          RAKUTEN_ACCESS_KEY: ${{ secrets.RAKUTEN_ACCESS_KEY }}
+          RAKUTEN_ENDPOINT: ${{ vars.RAKUTEN_ENDPOINT }}
+          YAHOO_APP_ID: ${{ secrets.YAHOO_APP_ID }}
+        run: python -m monitor.run
+
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/ index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: price check $(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M JST')"
+          git pull --rebase -q
+          git push

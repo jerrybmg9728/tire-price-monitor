@@ -1,0 +1,34 @@
+{
+ "targets": {
+  "vrx3": [
+   {
+    "checkedAt": "2026-11-28T12:43:18+09:00",
+    "lowestUnitPrice": 6600,
+    "top3AvgUnitPrice": 6890,
+    "medianUnitPrice": 7138,
+    "offerCount": 6,
+    "status": "ok"
+   }
+  ],
+  "summer": [
+   {
+    "checkedAt": "2026-11-28T12:43:18+09:00",
+    "lowestUnitPrice": 3380,
+    "top3AvgUnitPrice": 3380,
+    "medianUnitPrice": 4150,
+    "offerCount": 9,
+    "status": "ok"
+   }
+  ],
+  "wz1": [
+   {
+    "checkedAt": "2026-11-28T12:43:18+09:00",
+    "lowestUnitPrice": 8000,
+    "top3AvgUnitPrice": 9651,
+    "medianUnitPrice": 10750,
+    "offerCount": 17,
+    "status": "ok"
+   }
+  ]
+ }
+}

@@ -1,534 +1,166 @@
 <!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="color-scheme" content="light dark" />
-<link rel="icon" href="data:," />
-<title>タイヤ価格監視（共有版）— 155/65R14 相場スナップショット</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#f4f4f2; --surface:#ffffff; --surface-alt:#ececea; --border:#d9d9d4;
-  --text:#1c1e22; --dim:#5c6068; --accent:#e8590c; --accent-ink:#ffffff;
-  --winter:#0b7285; --summer:#e67700; --down:#0b7285; --up:#c92a2a;
-  --chart-low:#e8590c; --chart-med:#868e96;
-  --radius:14px;
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#14161a; --surface:#1e2126; --surface-alt:#262a30; --border:#353a41;
-    --text:#f1f2f4; --dim:#a7adb6; --accent:#ffa94d; --accent-ink:#1c1e22;
-    --winter:#66d9e8; --summer:#ffd43b; --down:#66d9e8; --up:#ff8787;
-    --chart-low:#ffa94d; --chart-med:#adb5bd;
-  }
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans JP",system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
-.num{font-family:"Barlow Condensed","Noto Sans JP",sans-serif;letter-spacing:.02em}
-a{color:var(--accent)}
-button,[role="button"],select,summary{min-height:2.25rem}
-.wrap{max-width:1060px;margin:0 auto;padding:20px 16px 56px}
-.top{border-bottom:3px solid var(--text);padding-bottom:16px}
-.top h1{font-size:clamp(26px,5vw,40px);line-height:1.2;margin:0;font-weight:900;letter-spacing:.01em}
-.top .sub{margin:8px 0 0;color:var(--dim);font-size:15px;max-width:44em}
-.snapshot{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
-.chip strong{color:var(--accent)}
-.readonly{border:1px dashed var(--border);background:var(--surface);border-radius:var(--radius);padding:12px 14px;margin-top:16px;font-size:14px}
-.readonly b{font-weight:900}
-.summary{margin-top:20px}
-.summary h2,.sec-head h2{font-size:20px;margin:0;font-weight:900}
-.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
-@media(max-width:760px){.summary-grid{grid-template-columns:1fr}}
-.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-decoration:none;color:var(--text);display:block}
-.sum-card:hover{border-color:var(--accent)}
-.sum-card .season{font-size:12px;font-weight:900}
-.sum-card .tname{font-size:16px;font-weight:900;margin-top:2px;line-height:1.35}
-.sum-card .price{font-size:44px;font-weight:700;line-height:1;margin-top:8px;color:var(--accent)}
-.sum-card .meta{font-size:13px;color:var(--dim);margin-top:6px}
-.diff{display:inline-flex;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:900;background:var(--surface-alt)}
-.diff.up{color:var(--up)} .diff.down{color:var(--down)} .diff.flat{color:var(--dim)}
-.tire{margin-top:36px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px}
-@media(max-width:600px){.tire{padding:16px 14px}}
-.sec-head{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;justify-content:space-between}
-.badge{display:inline-block;font-size:12px;font-weight:900;border:1.5px solid;padding:2px 9px;border-radius:6px}
-.badge.winter{color:var(--winter);border-color:var(--winter)}
-.badge.summer{color:var(--summer);border-color:var(--summer)}
-.size{font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:600;color:var(--dim)}
-.board{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:0;margin-top:16px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-@media(max-width:700px){.board{grid-template-columns:1fr 1fr}}
-.board>div{padding:14px 16px;background:var(--surface)}
-.board>div+div{border-left:1px solid var(--border)}
-@media(max-width:700px){.board>div+div{border-left:none}.board .b-main{grid-column:1/-1;border-bottom:1px solid var(--border)}.board .b-set{border-left:1px solid var(--border)}}
-.board .lbl{font-size:12px;font-weight:700;color:var(--dim);letter-spacing:.04em}
-.board .big{font-size:56px;font-weight:700;line-height:1;color:var(--accent)}
-.board .mid{font-size:30px;font-weight:700;line-height:1.15}
-.board .store{font-size:15px;font-weight:700;margin-top:6px}
-.board .store a{text-decoration-thickness:2px;text-underline-offset:3px}
-.board .note{font-size:12px;color:var(--dim);margin-top:2px}
-.evidence{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.btn{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 14px;border:1.5px solid var(--accent);border-radius:10px;font-weight:900;font-size:14px;text-decoration:none;color:var(--accent);background:var(--surface)}
-.btn:hover{background:var(--surface-alt)}
-.chart-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin-top:26px}
-.chart-head h3{font-size:17px;margin:0;font-weight:900}
-.chart-head .hint{font-size:12px;color:var(--dim)}
-.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--dim);margin-top:6px}
-.legend i{display:inline-block;width:22px;height:4px;border-radius:2px;vertical-align:middle;margin-right:5px}
-.chartbox{margin-top:8px;border:1px solid var(--border);border-radius:var(--radius);padding:10px 6px 4px;background:var(--surface)}
-.chartbox svg{width:100%;height:auto;display:block}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{background:var(--surface-alt);border-radius:10px;padding:10px 12px;text-align:center}
-.stat .sl{font-size:11px;color:var(--dim);font-weight:700}
-.stat .sv{font-size:24px;font-weight:700;line-height:1.2}
-.offers{margin-top:26px}
-.offers h3{font-size:17px;margin:0 0 4px;font-weight:900}
-.offer{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--border)}
-.offer:last-child{border-bottom:none}
-.rank{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;background:var(--surface-alt);color:var(--dim)}
-.rank.first{background:var(--accent);color:var(--accent-ink)}
-.offer .obody{flex:1;min-width:0}
-.offer .otitle{font-weight:700;font-size:15px;line-height:1.45}
-.offer .ostore{font-size:13px;color:var(--dim);margin-top:2px}
-.offer .olink{display:inline-flex;align-items:center;min-height:36px;font-size:13px;font-weight:900;text-decoration:none}
-.offer .olink:hover{text-decoration:underline}
-.offer .oprice{text-align:right;flex:none}
-.offer .oprice .u{font-size:30px;font-weight:700;color:var(--accent);line-height:1}
-.offer .oprice .p{font-size:12px;color:var(--dim);margin-top:3px}
-.callout{margin-top:16px;background:var(--surface-alt);border-radius:var(--radius);padding:12px 14px;font-size:14px}
-.callout b{font-weight:900}
-details{margin-top:18px}
-summary{cursor:pointer;font-weight:900;font-size:14px;padding:8px 0;min-height:44px;display:flex;align-items:center}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
-th:first-child,td:first-child{text-align:left}
-thead th{color:var(--dim);font-size:12px}
-.tablewrap{overflow-x:auto}
-footer{margin-top:40px;border-top:1px solid var(--border);padding-top:16px;font-size:13px;color:var(--dim)}
-footer p{margin:4px 0}
-.howto{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
-@media(max-width:760px){.howto{grid-template-columns:1fr}}
-.howto div{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;font-size:14px}
-.howto b{display:block;font-size:15px;margin-bottom:4px}
-</style>
-</head>
-<body>
-<div class="wrap">
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>タイヤ価格監視 155/65R14</title><style>
+:root{--bg:#fff;--ink:#1a1a1a;--dim:#6b6b6b;--line:#e4e4e4;--accent:#b3261e;--soft:#f7f7f5;--ok:#2e7d32;--warn:#a36a00}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--ink:#eee;--dim:#a0a0a0;--line:#333;--accent:#ff8a80;--soft:#1e1e1e;--ok:#81c784;--warn:#ffb74d}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 "Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 16px 64px}
+h1,h2,h3{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-weight:600;margin:0}
+h1{font-size:clamp(24px,4vw,34px)}h2{font-size:22px}h4{margin:28px 0 8px;font-size:14px;color:var(--dim);letter-spacing:.06em}
+header{border-bottom:1px solid var(--ink);padding-bottom:16px}
+.muted{color:var(--dim)}.small{font-size:13px}a{color:var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:24px}
+.card{display:block;border:1px solid var(--line);padding:16px;text-decoration:none;color:var(--ink)}
+.card:hover{border-color:var(--ink)}.card h3{font-size:17px;margin-top:4px}
+.price{font-size:38px;font-weight:600;color:var(--accent);margin-top:6px;font-variant-numeric:tabular-nums}
+.price small{font-size:14px;color:var(--dim)}.price.none{font-size:22px;color:var(--dim)}
+.card p{margin:4px 0 8px;font-size:13px}
+.season{font-size:12px;border:1px solid;padding:1px 8px}.season.winter{color:#1d5f8a}.season.summer{color:#a35a00}
+.diff{font-size:12px;padding:2px 8px;background:var(--soft)}.diff.down{color:var(--ok)}.diff.up{color:var(--accent)}.diff.flat{color:var(--dim)}
+.target{margin-top:48px;padding-top:24px;border-top:1px solid var(--line)}
+.head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.board{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);margin-top:16px}
+.board>div{padding:14px 16px;display:flex;flex-direction:column}.board>div+div{border-left:1px solid var(--line)}
+@media(max-width:640px){.board{grid-template-columns:1fr}.board>div+div{border-left:0;border-top:1px solid var(--line)}}
+.lbl{font-size:12px;color:var(--dim)}.big{font-size:40px;color:var(--accent);font-variant-numeric:tabular-nums}
+.mid{font-size:26px;font-variant-numeric:tabular-nums}
+.btn{display:inline-block;margin-top:12px;border:1px solid var(--accent);padding:8px 14px;text-decoration:none;min-height:44px}
+.ranges button{background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:6px 12px;min-height:36px;cursor:pointer;font:inherit}
+.ranges button.on{border-color:var(--ink);font-weight:600}
+.chart{border:1px solid var(--line);margin-top:8px;overflow-x:auto}.chart svg{display:block;width:100%;min-width:560px;height:auto}
+.legend{font-size:12px;color:var(--dim)}.legend i{display:inline-block;width:20px;height:3px;vertical-align:middle;margin:0 4px 0 12px}
+.l1{background:var(--accent)}.l2{background:var(--ink)}.l3{background:var(--dim);opacity:.5}
+.offers{width:100%;border-collapse:collapse;table-layout:fixed}.offers td{overflow-wrap:anywhere}.offers .r{width:9.5em}.offers td{border-top:1px solid var(--line);padding:10px 6px;vertical-align:top}
+.offers .n{width:28px;color:var(--dim)}body{overflow-wrap:anywhere}.offers .r{text-align:right;white-space:nowrap}.offers .muted{font-size:12px}
+.mstatus{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}
+.mstatus .ok b{color:var(--ok)}.mstatus .warn b{color:var(--warn)}.mstatus .err b{color:var(--accent)}
+footer{margin-top:56px;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--dim)}
+</style></head>
+<body><div class="wrap">
+<header><h1>タイヤ価格監視 <span class="muted">155/65R14</span></h1>
+<p class="muted">楽天市場・Yahoo!ショッピング・ヤフオク!・Amazon の新品出品を1時間ごとに自動で集計しています。
+価格は税込・1本あたりに換算（送料は含めず、送料無料かどうかを表示）。</p>
+<p><b>データ時点：2026/11/28 12:43</b>（日本時間）</p></header>
+<div class="cards"><a class="card" href="#vrx3"><span class="season winter">冬用</span><h3>ブリザック VRX3</h3><div class="price">¥6,600<small>/本</small></div><p class="muted">個人出品（ヤフオク!） ・ 4本 ¥26,400</p><span class="diff flat">前回比 —</span></a><a class="card" href="#summer"><span class="season summer">夏用</span><h3>夏タイヤ（サマー）</h3><div class="price">¥3,380<small>/本</small></div><p class="muted">ストア出品（ヤフオク!） ・ 4本 ¥13,520</p><span class="diff flat">前回比 —</span></a><a class="card" href="#wz1"><span class="season winter">冬用</span><h3>ブリザック WZ-1</h3><div class="price">¥8,000<small>/本</small></div><p class="muted">個人出品（ヤフオク!） ・ 4本 ¥32,000</p><span class="diff flat">前回比 —</span></a></div>
 
-  <header class="top">
-    <h1>タイヤ価格監視（共有版）</h1>
-    <p class="sub">155/65R14 の夏タイヤ・冬タイヤについて、楽天市場・Yahoo!ショッピング・ヤフオク・ヨドバシ.com・モノタロウなどで確認した最安値と相場をまとめた閲覧ページです。</p>
-    <div class="snapshot">
-      <span class="chip">データ時点：<strong>2026-11-28 11:37 JST（最新チェック）</strong></span>
-      <span class="chip">対象サイズ：<strong>155/65R14</strong></span>
-      <span class="chip">監視対象：<strong>3銘柄</strong></span>
-      <span class="chip">価格は税込・1本あたり単価で統一</span>
-    </div>
-    <div class="readonly" role="note">
-      <b>このページについて：</b> データ時点：2026-11-28 11:37 JST（最新チェック）（1時間ごとに更新される本体のスナップショット）です。この共有版は閲覧専用の固定ページで、開いた時点では自動更新されません。価格・在庫は各商品ページで変わることがあるため、購入前にリンク先で最新情報をご確認ください。
-    </div>
-  </header>
-
-  <section class="summary" aria-label="最安値のまとめ">
-    <h2>いまの最安値まとめ</h2>
-    <div class="summary-grid">
-      <a class="sum-card" href="#vrx3">
-        <span class="season" style="color:var(--winter)">冬用 スタッドレス</span>
-        <div class="tname">ブリザック VRX3</div>
-        <div class="price num">¥8,500<span style="font-size:16px;color:var(--dim)"> /本</span></div>
-<div class="meta">タイヤワールド館ベスト楽天市場店（楽天市場） ・ 4本セット最安 ¥34,000<br>相場（中央値）¥8,500/本　<span class="diff up">前回比 +¥1,500（前回 ¥7,000）</span></div>
-      </a>
-      <a class="sum-card" href="#summer">
-        <span class="season" style="color:var(--summer)">夏用 サマー</span>
-        <div class="tname">夏タイヤ（NEWNO 等）</div>
-<div class="price num">¥4,460<span style="font-size:16px;color:var(--dim)"> /本</span></div>
-<div class="meta">タイヤ購入と交換予約 TIREHOOD（楽天市場） ・ 4本セット最安 ¥17,839<br>相場（中央値）¥7,250/本　<span class="diff up">前回比 +¥940（前回 ¥3,520）</span></div>
-      </a>
-      <a class="sum-card" href="#wz1">
-        <span class="season" style="color:var(--winter)">冬用 スタッドレス</span>
-        <div class="tname">ブリザック WZ-1</div>
-        <div class="price num" style="font-size:30px">取得なし</div>
-<div class="meta">主要4市場の出品なし（参考価格のみ2件） ・ 4本セット出品なし<br>相場（中央値）取得なし　<span class="diff flat">前回 ¥10,525</span></div>
-      </a>
-    </div>
-    <div class="howto" aria-label="読み方">
-      <div><b>最安単価とは</b>そのチェックで見つかった出品のうち、送料条件を除きタイヤ1本あたりに換算した最も安い価格です。4本セット品は単価に換算して比べています。</div>
-      <div><b>相場（中央値）とは</b>同じチェックで集まった出品の単価の中央値です。最安値だけでは分からない「全体の価格水準」の目安になります。</div>
-      <div><b>グラフの見方</b>オレンジが最安単価、グレーが相場（中央値）です。安い出品が出たり消えたりすると最安値が上下するため、相場の線とあわせて見ると動きの実態がつかめます。</div>
-    </div>
-  </section>
-
-  <!-- ============ VRX3 ============ -->
-  <article class="tire" id="vrx3">
-    <div class="sec-head">
-      <div>
-        <span class="badge winter">冬用 スタッドレス</span>
-        <h2 style="font-size:22px;margin:6px 0 0;font-weight:900">ブリザック VRX3</h2>
-        <p style="margin:2px 0 0;color:var(--dim);font-size:14px">ブリヂストン BLIZZAK VRX3</p>
-      </div>
-      <span class="size">155/65R14</span>
-    </div>
-
-    <div class="board" aria-label="VRX3の最安値ボード">
-      <div class="b-main">
-        <div class="lbl">現在の最安値（1本あたり）</div>
-        <div class="big num">¥8,500</div>
-<div class="store"><a href="https://item.rakuten.co.jp/tire-worldkan-best/f-11632015-4set/" target="_blank" rel="noreferrer">タイヤワールド館ベスト楽天市場店（楽天市場）</a></div>
-<div class="note">4本セット ¥34,000 ・ 送料 無料 ・ 2026年11月28日 11:37 時点</div>
-<div style="margin-top:6px"><span class="diff up">前回比 +¥1,500（前回 ¥7,000）</span></div>
-      </div>
-      <div class="b-set">
-        <div class="lbl">4本セット最安</div>
-        <div class="mid num">¥34,000</div>
-<div class="note">タイヤワールド館ベスト楽天市場店（楽天市場）<br>（¥8,500/本）</div>
-      </div>
-      <div>
-        <div class="lbl">相場（中央値）</div>
-        <div class="mid num">¥8,500<span style="font-size:15px;color:var(--dim)"> /本</span></div>
-<div class="note">最新チェックの出品3件から算出<br>観測最安は ¥8,500/本</div>
-      </div>
-    </div>
-    <div class="evidence">
-      <span style="font-size:12px;font-weight:700;color:var(--dim)">単価の根拠（最安値の出品ページ）</span>
-      <a class="btn" href="https://item.rakuten.co.jp/tire-worldkan-best/f-11632015-4set/" target="_blank" rel="noreferrer">商品ページを開く ↗ <span style="font-weight:400;color:var(--dim)">item.rakuten.co.jp</span></a>
-    </div>
-
-    <div class="chart-head"><h3>価格の推移グラフ</h3><span class="hint">11/22 12:42 〜 11/28 11:37 ・ 全96回チェック ・ 横軸は6時間ごと（00:00 / 06:00 / 12:00 / 18:00）の時刻</span></div>
- <div class="legend"><span><i style="background:var(--chart-low)"></i>最安単価（1本）</span><span><i style="background:var(--chart-med)"></i>相場・中央値（1本）</span><span>縦軸は円（目盛りはデータ範囲に合わせています）</span></div>
- <div class="chartbox" id="chart-vrx3" role="img" aria-label="ブリザック VRX3の価格推移グラフ。最安単価は4,250円から11,545円の間で推移し、最新は8,500円。相場は6,915円から15,739円の間で推移し、最新は8,500円。"></div>
-    <div class="stats" id="stats-vrx3"></div>
-
-        <div class="offers">
-<h3>現在の出品一覧（単価の安い順）</h3>
-<div class="offer"><span class="rank first num">1</span><div class="obody"><div class="otitle">【2026年製】155/65R14 75Q ブリヂストン BLIZZAK VRX3 スタッドレスタイヤ単品4本価格《送料無料》【取付対象】</div><div class="ostore">タイヤワールド館ベスト楽天市場店（楽天市場） ・ 送料 無料</div><a class="olink" href="https://item.rakuten.co.jp/tire-worldkan-best/f-11632015-4set/" target="_blank" rel="noreferrer">商品ページ ↗ item.rakuten.co.jp</a></div><div class="oprice"><div class="u num">¥8,500<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">4本セット ¥34,000</div></div></div>
-<div class="offer"><span class="rank num">2</span><div class="obody"><div class="otitle">【スタッドレスタイヤ4本set】 BRIDGESTONE(ブリヂストン) BLIZZAK VRX3</div><div class="ostore">モノタロウ（その他） ・ 参考価格 ・ 送料 —</div><a class="olink" href="https://www.monotaro.com/g/06974424/" target="_blank" rel="noreferrer">商品ページ ↗ www.monotaro.com</a></div><div class="oprice"><div class="u num">¥11,545<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">4本セット ¥46,178</div></div></div>
-<div class="offer"><span class="rank num">3</span><div class="obody"><div class="otitle">155/65 R14 BLIZZAK VRX3 BRIDGESTONE(ブリヂストン) 1本</div><div class="ostore">モノタロウ（その他） ・ 参考価格 ・ 送料 —</div><a class="olink" href="https://www.monotaro.com/p/7305/7794/" target="_blank" rel="noreferrer">商品ページ ↗ www.monotaro.com</a></div><div class="oprice"><div class="u num">¥17,578<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">1本 ¥17,578</div></div></div>
-</div>
-
-<div class="callout"><b>相場メモ：</b> VRX3 155/65R14: 商品ページで価格確認できたもののみ。タイヤショップZERO楽天店28,320円は商品ページ抽出に価格がなく短縮URLのみのため除外。ヤフオク!25,500円は「サイズ間違い」の追記があり本日21:47終了のライブオークションのため除外。Yahoo!ショッピング・Amazonのタイヤ単体出品は確認できず。</div>
-
-    <details>
-      <summary>チェック履歴をすべて見る（96件）</summary>
- <div class="tablewrap"><table id="hist-vrx3"><thead><tr><th>チェック時刻（JST）</th><th>最安単価</th><th>相場（中央値）</th></tr></thead><tbody></tbody></table></div>
-    </details>
-  </article>
-
-  <!-- ============ Summer ============ -->
-  <article class="tire" id="summer">
-    <div class="sec-head">
-      <div>
-        <span class="badge summer">夏用 サマー</span>
-        <h2 style="font-size:22px;margin:6px 0 0;font-weight:900">夏タイヤ</h2>
-        <p style="margin:2px 0 0;color:var(--dim);font-size:14px">155/65R14 サマータイヤ全般（基準はブリヂストン NEWNO）</p>
-      </div>
-      <span class="size">155/65R14</span>
-    </div>
-
-    <div class="board" aria-label="夏タイヤの最安値ボード">
-      <div class="b-main">
-        <div class="lbl">現在の最安値（1本あたり）</div>
-        <div class="big num">¥4,460</div>
-<div class="store"><a href="https://item.rakuten.co.jp/tire-hood/th01500009525/" target="_blank" rel="noreferrer">タイヤ購入と交換予約 TIREHOOD（楽天市場）</a></div>
-<div class="note">4本セット ¥17,839 ・ 送料 無料 ・ 2026年11月28日 11:37 時点</div>
-<div style="margin-top:6px"><span class="diff up">前回比 +¥940（前回 ¥3,520）</span></div>
-      </div>
-      <div class="b-set">
-        <div class="lbl">4本セット最安</div>
-        <div class="mid num">¥17,839</div>
-<div class="note">タイヤ購入と交換予約 TIREHOOD（楽天市場）<br>（¥4,460/本）</div>
-      </div>
-      <div>
-        <div class="lbl">相場（中央値）</div>
-        <div class="mid num">¥7,250<span style="font-size:15px;color:var(--dim)"> /本</span></div>
-<div class="note">最新チェックの出品7件から算出<br>観測最安は ¥4,460/本</div>
-      </div>
-    </div>
-    <div class="evidence">
-      <span style="font-size:12px;font-weight:700;color:var(--dim)">単価の根拠（最安値の出品ページ）</span>
-      <a class="btn" href="https://item.rakuten.co.jp/tire-hood/th01500009525/" target="_blank" rel="noreferrer">商品ページを開く ↗ <span style="font-weight:400;color:var(--dim)">item.rakuten.co.jp</span></a>
-    </div>
-
-    <div class="chart-head"><h3>価格の推移グラフ</h3><span class="hint">11/22 12:42 〜 11/28 11:37 ・ 全96回チェック ・ 横軸は6時間ごと（00:00 / 06:00 / 12:00 / 18:00）の時刻</span></div>
-    <div class="legend"><span><i style="background:var(--chart-low)"></i>最安単価（1本）</span><span><i style="background:var(--chart-med)"></i>相場・中央値（1本）</span><span>縦軸は円（目盛りはデータ範囲に合わせています）</span></div>
-    <div class="chartbox" id="chart-summer" role="img" aria-label="夏タイヤの価格推移グラフ。最安単価は3,180円から8,000円の間で推移し、最新は4,460円。相場は4,180円から10,350円の間で推移し、最新は7,250円。"></div>
-    <div class="stats" id="stats-summer"></div>
-
-        <div class="offers">
-<h3>現在の出品一覧（単価の安い順）</h3>
-<div class="offer"><span class="rank first num">1</span><div class="obody"><div class="otitle">【タイヤ交換可能】【155/65R14 75T】クムホ エコウィング ES31 サマータイヤ単品4本セット</div><div class="ostore">タイヤ購入と交換予約 TIREHOOD（楽天市場） ・ 送料 無料</div><a class="olink" href="https://item.rakuten.co.jp/tire-hood/th01500009525/" target="_blank" rel="noreferrer">商品ページ ↗ item.rakuten.co.jp</a></div><div class="oprice"><div class="u num">¥4,460<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">4本セット ¥17,839</div></div></div>
-<div class="offer"><span class="rank num">2</span><div class="obody"><div class="otitle">【タイヤ交換可能】【155/65R14 75S】ヨコハマ エスサンマルロク サマータイヤ単品4本セット</div><div class="ostore">タイヤ購入と交換予約 TIREHOOD（楽天市場） ・ 送料 無料</div><a class="olink" href="https://item.rakuten.co.jp/tire-hood/th01500014595/" target="_blank" rel="noreferrer">商品ページ ↗ item.rakuten.co.jp</a></div><div class="oprice"><div class="u num">¥6,120<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">4本セット ¥24,480</div></div></div>
-<div class="offer"><span class="rank num">3</span><div class="obody"><div class="otitle">【タイヤ交換可能】2026年製【155/65R14 75H】ブリヂストン ニューノ サマータイヤ単品4本セット</div><div class="ostore">タイヤ購入と交換予約 TIREHOOD（楽天市場） ・ 送料 無料</div><a class="olink" href="https://item.rakuten.co.jp/tire-hood/th01500016139/" target="_blank" rel="noreferrer">商品ページ ↗ item.rakuten.co.jp</a></div><div class="oprice"><div class="u num">¥6,210<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">4本セット ¥24,840</div></div></div>
-<div class="offer"><span class="rank num">4</span><div class="obody"><div class="otitle">【タイヤ交換可能】【155/65R14 75S】ダンロップ エナセーブ EC205 サマータイヤ単品4本セット</div><div class="ostore">タイヤ購入と交換予約 TIREHOOD（楽天市場） ・ 送料 無料</div><a class="olink" href="https://item.rakuten.co.jp/tire-hood/th01500021321/" target="_blank" rel="noreferrer">商品ページ ↗ item.rakuten.co.jp</a></div><div class="oprice"><div class="u num">¥7,250<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">4本セット ¥29,000</div></div></div>
-<div class="offer"><span class="rank num">5</span><div class="obody"><div class="otitle">エナセーブ EC205 155/65R14 75S 新品 ダンロップ 低燃費 夏タイヤ</div><div class="ostore">タイヤダイレクト ヤフー店（Yahoo!ショッピング） ・ 送料 ¥1,650</div><a class="olink" href="https://store.shopping.yahoo.co.jp/tire-direct/ec205-1556514-dl.html" target="_blank" rel="noreferrer">商品ページ ↗ store.shopping.yahoo.co.jp</a></div><div class="oprice"><div class="u num">¥8,000<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">1本 ¥8,000</div></div></div>
-<div class="offer"><span class="rank num">6</span><div class="obody"><div class="otitle">BRIDGESTONE ブリヂストン FINESSA フィネッサ HB01 155/65R14 75H サマータイヤ単品 4本セット</div><div class="ostore">カーポートマルゼン（Yahoo!ショッピング） ・ 送料 無料</div><a class="olink" href="https://store.shopping.yahoo.co.jp/carport-maluzen/62896-4.html" target="_blank" rel="noreferrer">商品ページ ↗ store.shopping.yahoo.co.jp</a></div><div class="oprice"><div class="u num">¥10,350<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">4本セット ¥41,400</div></div></div>
-<div class="offer"><span class="rank num">7</span><div class="obody"><div class="otitle">ブリヂストン REGNO GR-XIII 155/65R14 75H サマータイヤ 4本セット</div><div class="ostore">タイヤショップZERO（Yahoo!ショッピング） ・ 送料 無料</div><a class="olink" href="https://store.shopping.yahoo.co.jp/tire-zero/x4si-std-grx3-155-65r14-75h.html" target="_blank" rel="noreferrer">商品ページ ↗ store.shopping.yahoo.co.jp</a></div><div class="oprice"><div class="u num">¥10,950<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">4本セット ¥43,800</div></div></div>
-</div>
-
-<div class="callout"><b>相場メモ：</b> 夏タイヤ155/65R14: 7件保存。Amazon 2件は商品ページのクロールが約9〜10か月前と古く現在価格を確認できなかったため除外。REGNO GR-XIIIは予約品（2027年7月上旬入荷予定）である点に注意。ヤフオク!出品は確認できず。</div>
-
-    <details>
-      <summary>チェック履歴をすべて見る（96件）</summary>
- <div class="tablewrap"><table id="hist-summer"><thead><tr><th>チェック時刻（JST）</th><th>最安単価</th><th>相場（中央値）</th></tr></thead><tbody></tbody></table></div>
-    </details>
-  </article>
-
-  <!-- ============ WZ-1 ============ -->
-  <article class="tire" id="wz1">
-    <div class="sec-head">
-      <div>
-        <span class="badge winter">冬用 スタッドレス</span>
-        <h2 style="font-size:22px;margin:6px 0 0;font-weight:900">ブリザック WZ-1</h2>
-        <p style="margin:2px 0 0;color:var(--dim);font-size:14px">ブリヂストン BLIZZAK WZ-1</p>
-      </div>
-      <span class="size">155/65R14</span>
-    </div>
-
-    <div class="board" aria-label="WZ-1の最安値ボード">
-      <div class="b-main">
-        <div class="lbl">現在の最安値（1本あたり）</div>
-        <div class="big num" style="font-size:40px">取得なし</div>
-<div class="store">主要4市場（楽天市場・Yahoo!ショッピング・ヤフオク!・Amazon）に検証可能な出品なし</div>
-<div class="note">参考価格のみ ・ 2026年11月28日 11:37 時点</div>
-<div style="margin-top:6px"><span class="diff flat">前回比 —（前回 ¥10,525）</span></div>
-      </div>
-      <div class="b-set">
-        <div class="lbl">4本セット最安</div>
-        <div class="mid num">出品なし</div>
-<div class="note">4本セットの出品は確認できず</div>
-      </div>
-      <div>
-        <div class="lbl">相場（中央値）</div>
-        <div class="mid num">取得なし</div>
-<div class="note">参考価格（出品2件）：ヨドバシ ¥13,910/本<br>モノタロウ ¥18,678/本</div>
-      </div>
-    </div>
-        <div class="evidence">
-      <span style="font-size:12px;font-weight:700;color:var(--dim)">主要4市場で検証可能な商品ページが得られなかったため、最安値の根拠リンクはありません（下記の出品は参考価格です）</span>
-    </div>
-
-    <div class="chart-head"><h3>価格の推移グラフ</h3><span class="hint">価格推移は 11/23 18:35 〜 11/27 16:38 の価格取得分（全80回チェック）。なお 11/26 17:31、11/27 02:40、11/27 05:35、11/27 07:34、11/27 08:35、11/27 09:40、11/27 11:34、11/27 17:34、11/27 18:33、11/27 19:36、11/28 11:37 のチェックは価格取得できず ・ 横軸は6時間ごと（00:00 / 06:00 / 12:00 / 18:00）の時刻</span></div>
-    <div class="legend"><span><i style="background:var(--chart-low)"></i>最安単価（1本）</span><span><i style="background:var(--chart-med)"></i>相場・中央値（1本）</span><span>縦軸は円（目盛りはデータ範囲に合わせています）</span></div>
-    <div class="chartbox" id="chart-wz1" role="img" aria-label="ブリザック WZ-1の価格推移グラフ。最安単価は10,500円から13,910円の間で推移し、価格取得分の最新値は10,525円。相場は10,663円から16,294円の間で推移し、価格取得分の最新値は11,025円。最新チェック（11月28日11時37分）では価格を取得できなかった。"></div>
-    <div class="stats" id="stats-wz1"></div>
-
-        <div class="offers">
-      <h3>現在の出品一覧（参考価格のみ）</h3>
-<div class="offer"><span class="rank first num">1</span><div class="obody"><div class="otitle">ブリヂストン BRIDGESTONE BLIZZAK WZ-1 155/65R14 075Q PXR03175</div><div class="ostore">ヨドバシカメラ（その他） ・ 参考価格 ・ 送料 無料</div><a class="olink" href="https://www.yodobashi.com/product/100000001009366585/" target="_blank" rel="noreferrer">商品ページ ↗ www.yodobashi.com</a></div><div class="oprice"><div class="u num">¥13,910<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">1本 ¥13,910</div></div></div>
-<div class="offer"><span class="rank num">2</span><div class="obody"><div class="otitle">BLIZZAK WZ-1 BRIDGESTONE(ブリヂストン) スタッドレスタイヤ 155/65R14 075Q PXR03175</div><div class="ostore">モノタロウ（その他） ・ 参考価格 ・ 送料 —</div><a class="olink" href="https://www.monotaro.com/g/07856785/" target="_blank" rel="noreferrer">商品ページ ↗ www.monotaro.com</a></div><div class="oprice"><div class="u num">¥18,678<span style="font-size:14px;color:var(--dim)">/本</span></div><div class="p">1本 ¥18,678</div></div></div>
-</div>
-
-<div class="callout"><b>相場メモ：</b> WZ-1はブリヂストンBLIZZAK WZ-1（VRX3後継・2025年9月発売）。メイン4プラットフォームでは確認できた出品は0件で、参考価格のみ2件。価格.com最安11,460円/本等の二次情報はURL特定できず未採用。なお、11/26 17:31、11/27 02:40、11/27 05:35、11/27 07:34、11/27 08:35、11/27 09:40、11/27 11:34、11/27 17:34、11/27 18:33、11/27 19:36、11/28 11:37 のチェックでは価格を取得できませんでした。</div>
-
-    <details>
-      <summary>チェック履歴をすべて見る（91件）</summary>
- <p style="font-size:13px;color:var(--dim);margin:8px 0">※ 2026/11/26 17:31、2026/11/27 02:40、2026/11/27 05:35、2026/11/27 07:34、2026/11/27 08:35、2026/11/27 09:40、2026/11/27 11:34、2026/11/27 17:34、2026/11/27 18:33、2026/11/27 19:36、2026/11/28 11:37 のチェックは価格取得できず（未取得）のため、グラフと下表の価格行には含まれていません。履歴の総数は91件、価格を取得できたチェックは80件です。</p>
-      <div class="tablewrap"><table id="hist-wz1"><thead><tr><th>チェック時刻（JST）</th><th>最安単価</th><th>相場（中央値）</th></tr></thead><tbody></tbody></table></div>
-    </details>
-  </article>
-
-  <footer>
-    <p><strong>データ時点：2026-11-28 11:37 JST（最新チェック）</strong> — 1時間ごとに更新される本体「タイヤ監視システム」のスナップショットを共有用に固定したページです。</p>
-    <p>チェック対象：楽天市場・Yahoo!ショッピング・ヤフオク・ヨドバシ.com・モノタロウ・フジサワタイヤ等。価格は各チェック時点で商品ページにて確認した税込価格で、1本あたり単価に換算しています（ホイールセット品は除外）。</p>
-    <p>価格・在庫・送料条件は変動します。購入の際は各商品ページの最新表示をご確認ください。新しい時点の共有版が必要な場合は、元の監視システム側で最新データを取得してから再作成します。</p>
-  </footer>
-</div>
-
+<section class="target" id="vrx3">
+  <div class="head"><span class="season winter">冬用</span><h2>ブリザック VRX3</h2></div>
+  <div class="board">
+    <div><span class="lbl">最安値（1本）</span><b class="big">¥6,600</b>
+      <span class="muted">個人出品</span></div>
+    <div><span class="lbl">安い順 上位3件の平均</span><b class="mid">¥6,890</b>
+      <span class="muted">1件の出入りで跳ねにくい目安</span></div>
+    <div><span class="lbl">相場（中央値）</span><b class="mid">¥7,138</b>
+      <span class="muted">6件から算出</span></div>
+  </div>
+  <a class="btn" href="https://auctions.yahoo.co.jp/jp/auction/p1253861363" target="_blank" rel="noopener">最安の商品ページ ↗</a>
+  <h4>価格の推移</h4>
+  <div class="ranges" data-target="vrx3">
+    <button data-h="24">24時間</button><button data-h="168" class="on">7日</button>
+    <button data-h="720">30日</button><button data-h="0">全期間</button>
+  </div>
+  <div class="chart" id="chart-vrx3"></div>
+  <p class="legend"><i class="l1"></i>最安値 <i class="l2"></i>上位3件の平均 <i class="l3"></i>中央値</p>
+  <h4>いまの出品（1本あたりの安い順）</h4>
+  <table class="offers"><tbody><tr><td class="n">1</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/p1253861363" target="_blank" rel="noopener">送料無料 在庫新品 スタッドレス 2024年製 155/65R14 BS VRX3 4本セット</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥6,600</b>/本<div class="muted">4本セット ¥26,400</div></td></tr><tr><td class="n">2</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/m1253990656" target="_blank" rel="noopener">個人宅配送OK【4本】2026年製 VRXIII 155/65R14 BRIDGESTONE BLIZZAK ブリヂストン ブリザック BS VRX3 沖縄/離島以外10</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥6,945</b>/本<div class="muted">4本セット ¥27,780</div></td></tr><tr><td class="n">3</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/t1253455453" target="_blank" rel="noopener">当日〜2日後出荷4本送料込★2026年★ブリヂストン☆ブリザック☆155/65R14★VRX3★スタッドレスタイヤ☆冬タイヤ、軽自動車サイズ6</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥7,125</b>/本<div class="muted">4本セット ¥28,500</div></td></tr><tr><td class="n">4</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/u1254062917" target="_blank" rel="noopener">数量限定 2026年製 ブリヂストン ブリザック VRX3 155/65R14 75Q 14インチ スタッドレス タイヤ 4本 送料無料 個人宅配送可</a><div class="muted">ヤフオク! ・ ストア出品 ・ 送料無料</div></td><td class="r"><b>¥7,150</b>/本<div class="muted">4本セット ¥28,600</div></td></tr><tr><td class="n">5</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/m1253591229" target="_blank" rel="noopener">送料無料 2026年製 新品 未使用品 スタッドレス 155/65R14 ブリヂストン VRX3 4本セット 軽自動車 セール</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥7,150</b>/本<div class="muted">4本セット ¥28,600</div></td></tr><tr><td class="n">6</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/s1253349352" target="_blank" rel="noopener">送料無料 2026年製 新品未使用品 スタッドレス 155/65R14 ブリヂストン VRX3 4本セット 軽自動車 セール 在庫あり</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥7,150</b>/本<div class="muted">4本セット ¥28,600</div></td></tr></tbody></table>
+  <p class="muted small">集計から除いた出品：タイトルに別の価格の記載あり 20件、入札あり 18件、新品以外 2件、本数の記載なし 2件、除外語「中古」 1件、サイズ違い 1件</p>
+  <h4>市場ごとの取得状況</h4>
+  <ul class="mstatus"><li class="warn"><b>楽天市場</b> 未設定（RAKUTEN_APP_ID / RAKUTEN_ACCESS_KEY なし）</li><li class="warn"><b>Yahoo!ショッピング</b> 未設定（YAHOO_APP_ID なし）</li><li class="ok"><b>ヤフオク!</b> 取得済み</li><li class="warn"><b>Amazon</b> 未接続（Creators API の資格情報待ち）</li></ul>
+</section>
+<section class="target" id="summer">
+  <div class="head"><span class="season summer">夏用</span><h2>夏タイヤ（サマー）</h2></div>
+  <div class="board">
+    <div><span class="lbl">最安値（1本）</span><b class="big">¥3,380</b>
+      <span class="muted">ストア出品</span></div>
+    <div><span class="lbl">安い順 上位3件の平均</span><b class="mid">¥3,380</b>
+      <span class="muted">1件の出入りで跳ねにくい目安</span></div>
+    <div><span class="lbl">相場（中央値）</span><b class="mid">¥4,150</b>
+      <span class="muted">9件から算出</span></div>
+  </div>
+  <a class="btn" href="https://auctions.yahoo.co.jp/jp/auction/g1254015461" target="_blank" rel="noopener">最安の商品ページ ↗</a>
+  <h4>価格の推移</h4>
+  <div class="ranges" data-target="summer">
+    <button data-h="24">24時間</button><button data-h="168" class="on">7日</button>
+    <button data-h="720">30日</button><button data-h="0">全期間</button>
+  </div>
+  <div class="chart" id="chart-summer"></div>
+  <p class="legend"><i class="l1"></i>最安値 <i class="l2"></i>上位3件の平均 <i class="l3"></i>中央値</p>
+  <h4>いまの出品（1本あたりの安い順）</h4>
+  <table class="offers"><tbody><tr><td class="n">1</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/g1254015461" target="_blank" rel="noopener">155/65R14 75T 4本セット 2026年製造 新品サマータイヤ APTANY RP203A 送料無料 155/65/14</a><div class="muted">ヤフオク! ・ ストア出品 ・ 送料無料</div></td><td class="r"><b>¥3,380</b>/本<div class="muted">4本セット ¥13,520</div></td></tr><tr><td class="n">2</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/j1253942919" target="_blank" rel="noopener">155/65R14 75T 4本セット 2026年製造 新品サマータイヤ APTANY RP203A 送料無料 155/65/14</a><div class="muted">ヤフオク! ・ ストア出品 ・ 送料無料</div></td><td class="r"><b>¥3,380</b>/本<div class="muted">4本セット ¥13,520</div></td></tr><tr><td class="n">3</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/j1253968441" target="_blank" rel="noopener">155/65R14 75T 2本セット 2026年製造 新品サマータイヤ APTANY RP203A 送料無料 155/65/14</a><div class="muted">ヤフオク! ・ ストア出品 ・ 送料無料</div></td><td class="r"><b>¥3,380</b>/本<div class="muted">2本 ¥6,760</div></td></tr><tr><td class="n">4</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/b1252952842" target="_blank" rel="noopener">2026年製 TIREFROG MILLIONROCK 百万石 155/65R14 79T XL WL ホワイトレター 4本セット タイヤフロッグ AT A/T 155/65-14 4本SET</a><div class="muted">ヤフオク! ・ ストア出品 ・ 送料別・要確認</div></td><td class="r"><b>¥3,950</b>/本<div class="muted">4本セット ¥15,800</div></td></tr><tr><td class="n">5</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/h1253522618" target="_blank" rel="noopener">155/65R14 4本セット(4本SET) SAILUN(サイレン) ATREZZO ECO サマータイヤ(エコ) (新品 当日発送 送料無料)</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥4,150</b>/本<div class="muted">4本セット ¥16,600</div></td></tr><tr><td class="n">6</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/z733694060" target="_blank" rel="noopener">ブリヂストン NEWNO 155/65R14 75H 新品サマータイヤ 4本 と 新品ゴムバルブ 4個付き</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥5,225</b>/本<div class="muted">4本セット ¥20,900</div></td></tr><tr><td class="n">7</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/z733474448" target="_blank" rel="noopener">ブリヂストン NEWNO 155/65R14 75H 新品サマータイヤ 4本セット</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥5,225</b>/本<div class="muted">4本セット ¥20,900</div></td></tr><tr><td class="n">8</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/z733870836" target="_blank" rel="noopener">ブリヂストン NEWNO 155/65R14 75H 新品サマータイヤ 4本と新品ゴムバルブ4個付き</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥5,225</b>/本<div class="muted">4本セット ¥20,900</div></td></tr><tr><td class="n">9</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/j1252970187" target="_blank" rel="noopener">2026年製 ミシュラン エナジー セイバー4 155/65R14 ( 4本セット) サマータイヤ 夏タイヤ 正規輸入品!</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥5,550</b>/本<div class="muted">4本セット ¥22,200</div></td></tr></tbody></table>
+  <p class="muted small">集計から除いた出品：除外語「中古」 19件、新品以外 18件、本数の記載なし 3件、入札あり 1件</p>
+  <h4>市場ごとの取得状況</h4>
+  <ul class="mstatus"><li class="warn"><b>楽天市場</b> 未設定（RAKUTEN_APP_ID / RAKUTEN_ACCESS_KEY なし）</li><li class="warn"><b>Yahoo!ショッピング</b> 未設定（YAHOO_APP_ID なし）</li><li class="ok"><b>ヤフオク!</b> 取得済み</li><li class="warn"><b>Amazon</b> 未接続（Creators API の資格情報待ち）</li></ul>
+</section>
+<section class="target" id="wz1">
+  <div class="head"><span class="season winter">冬用</span><h2>ブリザック WZ-1</h2></div>
+  <div class="board">
+    <div><span class="lbl">最安値（1本）</span><b class="big">¥8,000</b>
+      <span class="muted">個人出品</span></div>
+    <div><span class="lbl">安い順 上位3件の平均</span><b class="mid">¥9,651</b>
+      <span class="muted">1件の出入りで跳ねにくい目安</span></div>
+    <div><span class="lbl">相場（中央値）</span><b class="mid">¥10,750</b>
+      <span class="muted">17件から算出</span></div>
+  </div>
+  <a class="btn" href="https://auctions.yahoo.co.jp/jp/auction/m1253966389" target="_blank" rel="noopener">最安の商品ページ ↗</a>
+  <h4>価格の推移</h4>
+  <div class="ranges" data-target="wz1">
+    <button data-h="24">24時間</button><button data-h="168" class="on">7日</button>
+    <button data-h="720">30日</button><button data-h="0">全期間</button>
+  </div>
+  <div class="chart" id="chart-wz1"></div>
+  <p class="legend"><i class="l1"></i>最安値 <i class="l2"></i>上位3件の平均 <i class="l3"></i>中央値</p>
+  <h4>いまの出品（1本あたりの安い順）</h4>
+  <table class="offers"><tbody><tr><td class="n">1</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/m1253966389" target="_blank" rel="noopener">在庫限り 新品2025年冬 155/65R14 75Q 4本セット スタッドレス ブリヂストン ブリザック WZ-1 WZ1 タイヤ N-BOX サクラ デイズ タント ミラ</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料別・要確認</div></td><td class="r"><b>¥8,000</b>/本<div class="muted">4本セット ¥32,000</div></td></tr><tr><td class="n">2</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/n1252833356" target="_blank" rel="noopener">2025年製 BRIDGESTONE BLIZZAK WZ-1 155/65R14 75Q 4本セット ブリヂストン ブリザック スタッドレス 最高性能 155/65-14 4本SET</a><div class="muted">ヤフオク! ・ ストア出品 ・ 送料別・要確認</div></td><td class="r"><b>¥10,428</b>/本<div class="muted">4本セット ¥41,712</div></td></tr><tr><td class="n">3</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/b1253758259" target="_blank" rel="noopener">【2025年 新品 冬】155/65R14 BLIZZAK WZ-1 ブリヂストン 4本セット 冬 タイヤ スタッドレス 倉庫保管 N-BOX サクラ 臨</a><div class="muted">ヤフオク! ・ ストア出品 ・ 送料無料</div></td><td class="r"><b>¥10,525</b>/本<div class="muted">4本セット ¥42,100</div></td></tr><tr><td class="n">4</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/v1251224837" target="_blank" rel="noopener">155/65R14 BRIDGESTONE WZ-1 4本セット 新品未使用 スタッドレス ブリヂストン ブリザック デイズ ルークス N-BOX アルト デリカミニ ム-ヴ</a><div class="muted">ヤフオク! ・ ストア出品 ・ 送料無料</div></td><td class="r"><b>¥10,525</b>/本<div class="muted">4本セット ¥42,100</div></td></tr><tr><td class="n">5</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/f1251222621" target="_blank" rel="noopener">155/65R14 BRIDGESTONE WZ-1 4本セット 新品未使用 スタッドレス ブリヂストン ブリザック デイズ ルークス N-BOX アルト デリカミニ ム-ヴ</a><div class="muted">ヤフオク! ・ ストア出品 ・ 送料無料</div></td><td class="r"><b>¥10,525</b>/本<div class="muted">4本セット ¥42,100</div></td></tr><tr><td class="n">6</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/b1253299434" target="_blank" rel="noopener">新品 ブリヂストン 155/65R14 WZ-1 スタッドレス 4本 日産 デイズ デイズルークス ルークス モコ モコドルチェ 純正サイズ 冬タイヤ</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥10,750</b>/本<div class="muted">4本セット ¥43,000</div></td></tr><tr><td class="n">7</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/e1253015864" target="_blank" rel="noopener">新品 ブリヂストン 155/65R14 WZ-1 スタッドレス 4本 ダイハツ タント カスタム ムーヴ キャンバス コンテ ウェイク ミラ 純正サイズ</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥10,750</b>/本<div class="muted">4本セット ¥43,000</div></td></tr><tr><td class="n">8</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/s1253018379" target="_blank" rel="noopener">新品 ブリヂストン155/65R14 WZ-1 スタッドレス 4本 ホンダ N-BOX カスタム N-BOX+ スラッシュ N-ONE e: N-WGN Nボックス 純正サイズ</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥10,750</b>/本<div class="muted">4本セット ¥43,000</div></td></tr><tr><td class="n">9</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/u1253317071" target="_blank" rel="noopener">新品 ブリヂストン 155/65R14 WZ-1 スタッドレス 4本 スズキ アルト ラパン MR ワゴンR スティングレー スペーシア カスタム ギア 純正size</a><div class="muted">ヤフオク! ・ 個人出品 ・ 送料無料</div></td><td class="r"><b>¥10,750</b>/本<div class="muted">4本セット ¥43,000</div></td></tr><tr><td class="n">10</td><td><a href="https://auctions.yahoo.co.jp/jp/auction/x1240716334" target="_blank" rel="noopener">2025年製 155/65R14 75Q 4本セット価格 新品 ブリヂストン BLIZZAK ブリザック WZ-1 スタッドレス 冬タイヤ 14インチ BS 軽自動車 等</a><div class="muted">ヤフオク! ・ ストア出品 ・ 送料無料</div></td><td class="r"><b>¥11,200</b>/本<div class="muted">4本セット ¥44,800</div></td></tr></tbody></table>
+  <p class="muted small">集計から除いた出品：即決なし 9件、新品以外 6件、除外語「中古」 5件、除外語「ホイールセット」 5件、タイトルに別の価格の記載あり 4件、本数の記載なし 3件、単価が範囲外 1件</p>
+  <h4>市場ごとの取得状況</h4>
+  <ul class="mstatus"><li class="warn"><b>楽天市場</b> 未設定（RAKUTEN_APP_ID / RAKUTEN_ACCESS_KEY なし）</li><li class="warn"><b>Yahoo!ショッピング</b> 未設定（YAHOO_APP_ID なし）</li><li class="ok"><b>ヤフオク!</b> 取得済み</li><li class="warn"><b>Amazon</b> 未接続（Creators API の資格情報待ち）</li></ul>
+</section>
+<footer>
+<p>集計ルール：サイズと銘柄が一致する新品だけを対象にし、ホイール付き・中古・予約品は除外。ヤフオク!は即決価格のみで入札中の出品は除外。
+1本あたりが妥当な範囲を外れる価格は読み取りミスとして除外しています。</p>
+<p>表示価格はチェック時点のものです。購入前に商品ページで在庫・送料・製造年をご確認ください。</p>
+</footer></div>
+<script type="application/json" id="history">{"vrx3":[{"checkedAt":"2026-11-28T12:43:18+09:00","lowestUnitPrice":6600,"top3AvgUnitPrice":6890,"medianUnitPrice":7138,"offerCount":6,"status":"ok"}],"summer":[{"checkedAt":"2026-11-28T12:43:18+09:00","lowestUnitPrice":3380,"top3AvgUnitPrice":3380,"medianUnitPrice":4150,"offerCount":9,"status":"ok"}],"wz1":[{"checkedAt":"2026-11-28T12:43:18+09:00","lowestUnitPrice":8000,"top3AvgUnitPrice":9651,"medianUnitPrice":10750,"offerCount":17,"status":"ok"}]}</script>
 <script>
-var DATA = {
-  vrx3: [
-["11/22 12:42",7000,7200],["11/22 21:12",9000,11545],["11/23 08:26",7000,7320],["11/23 09:37",7320,9498],
-["11/23 18:34",9000,11545],["11/23 18:35",9000,11545],["11/24 06:23",11545,15739],["11/24 09:37",7000,7320],
-["11/24 11:03",7099,11545],["11/24 11:39",7000,7090],["11/24 12:40",7000,7099],["11/24 13:35",7000,7099],
-["11/24 14:34",7000,7210],["11/24 14:46",7080,8500],["11/24 15:38",7000,7080],["11/24 16:40",7000,7100],
-["11/24 17:28",11545,14562],["11/24 17:38",7000,7400],["11/24 18:40",7000,7090],["11/24 19:34",7080,7320],
-["11/24 20:33",7099,9060],["11/24 21:33",8500,11545],["11/24 22:38",7080,7150],["11/24 23:37",7480,7999],
-["11/25 00:39",6830,7099],["11/25 01:34",8500,11545],["11/25 02:36",7099,8500],["11/25 03:43",7080,7360],
-["11/25 04:35",7099,7910],["11/25 05:34",7480,11545],["11/25 06:35",7099,7320],["11/25 07:48",6600,6955],
-["11/25 08:36",7099,7910],["11/25 09:36",7000,7099],["11/25 10:34",7099,7910],["11/25 11:35",7099,9433],
-["11/25 12:36",7099,8500],["11/25 13:33",7099,7320],["11/25 14:33",8500,10023],["11/25 15:34",7320,10023],
-["11/25 16:34",7080,8500],["11/25 17:34",7000,7320],["11/25 18:34",9620,11545],["11/25 19:36",6830,7910],
-["11/25 20:35",7000,7320],["11/25 21:35",6830,7320],["11/25 22:41",4250,7000],["11/25 23:44",6830,7200],
-["11/26 00:35",6830,7200],["11/26 01:37",7320,11545],["11/26 02:41",6830,7273],["11/26 03:41",5610,7080],
-["11/26 04:44",7000,7320],["11/26 05:38",7320,11545],["11/26 06:35",7000,7320],["11/26 07:36",7000,7320],
-["11/26 08:34",8030,11545],["11/26 09:34",7000,7320],["11/26 10:33",7000,7320],["11/26 11:34",7000,7320],
-["11/26 12:34",7000,7320],["11/26 12:37",11545,14562],["11/26 13:33",7099,7320],["11/26 13:57",11545,14562],
-["11/26 14:36",7099,9620],["11/26 15:38",7000,8360],["11/26 16:34",11545,14562],["11/26 17:30",8030,8030],
-["11/26 17:34",7000,7099],["11/26 18:33",7000,7090],["11/26 19:36",7000,7660],["11/26 20:34",6830,7320],
-["11/26 21:33",6363,7090],["11/26 22:35",7000,7320],["11/26 23:41",6830,7000],["11/27 00:36",7000,7080],
-["11/27 01:35",7320,7675],["11/27 02:39",7000,7090],["11/27 03:37",7000,7080],["11/27 04:36",7000,7080],
-["11/27 05:34",8030,8030],["11/27 06:43",6610,7040],["11/27 07:34",8030,8030],["11/27 08:35",7000,7090],
-["11/27 09:40",7000,7080],["11/27 10:51",6830,7090],["11/27 11:35",7320,8030],["11/27 12:39",7000,7675],
-["11/27 13:40",7000,7320],
-["11/27 14:42",6830,6973],
-["11/27 15:39",6830,6915],
-["11/27 16:38",6830,6915],
-["11/27 17:34",7320,7910],
-["11/27 18:36",7000,7099],
-["11/27 19:36",7000,7099],
-["11/28 11:37",8500,8500]
-],
-  summer: [
-["11/22 12:42",5100,5240],["11/22 21:12",6310,7420],["11/22 21:14",6310,7785],["11/23 08:26",4620,5363],
-["11/23 09:38",6975,9175],["11/23 18:34",6925,6975],["11/23 18:35",6310,6975],["11/24 06:23",6310,7198],
-["11/24 09:37",3460,5250],["11/24 11:03",6310,6643],["11/24 11:39",4950,5100],["11/24 12:40",5500,6310],
-["11/24 13:35",6310,6975],["11/24 14:34",6310,8217],["11/24 14:45",6310,6643],["11/24 15:38",5230,6975],
-["11/24 16:41",3310,5230],["11/24 17:28",6310,6950],["11/24 17:38",3310,5300],["11/24 18:40",3310,6399],
-["11/24 19:34",6310,6975],["11/24 20:33",6975,8729],["11/24 21:33",6310,6975],["11/24 22:38",3520,5309],
-["11/24 23:37",3310,7750],["11/25 00:39",4700,5100],["11/25 01:34",6975,9175],["11/25 02:36",6310,8245],
-["11/25 03:43",3880,5100],["11/25 04:35",6975,7420],["11/25 05:34",5500,6750],["11/25 06:35",6310,6643],
-["11/25 07:48",3310,5215],["11/25 08:37",6310,6643],["11/25 09:36",6975,8000],["11/25 10:34",6310,8000],
-["11/25 11:35",6310,6643],["11/25 12:36",6310,6975],["11/25 13:34",6975,8245],["11/25 14:33",8000,9475],
-["11/25 15:34",6925,6975],["11/25 16:34",6310,6975],["11/25 17:37",5100,5250],["11/25 18:34",6975,8000],
-["11/25 19:36",3310,6950],["11/25 20:32",8000,8245],["11/25 21:36",3310,8123],["11/25 22:41",3310,5250],
-["11/25 23:45",3310,5755],["11/26 00:35",3310,5755],["11/26 01:37",4950,6310],["11/26 02:41",3310,4465],
-["11/26 03:41",3310,5238],["11/26 04:43",6310,8000],["11/26 05:38",5100,6925],["11/26 06:35",5100,6618],
-["11/26 07:36",5100,6618],["11/26 08:34",5500,5500],["11/26 09:35",6975,8795],["11/26 10:33",6975,8795],
-["11/26 11:34",6975,8795],["11/26 12:33",6310,7488],["11/26 12:38",6310,6865],["11/26 13:33",6975,10350],
-["11/26 13:57",6310,6925],["11/26 14:35",6310,7155],["11/26 15:38",6488,6950],["11/26 16:37",6975,8000],
-["11/26 17:30",5500,5500],["11/26 17:35",3480,5500],["11/26 18:33",5159,5750],["11/26 19:38",5500,5500],
-["11/26 20:34",5500,5500],["11/26 21:36",5500,5500],["11/26 22:35",5500,5500],["11/26 23:41",4180,5025],
-["11/27 00:36",5500,6230],["11/27 01:34",8000,9175],["11/27 02:40",5500,5500],["11/27 03:37",5500,5500],
-["11/27 04:37",3180,6120],["11/27 05:34",5500,5500],["11/27 06:43",3380,5370],["11/27 07:34",5159,5500],
-["11/27 09:40",3380,5270],["11/27 10:52",3380,5060],["11/27 11:36",5500,5500],["11/27 12:39",5500,5500],
-["11/27 13:40",5500,5500],
-["11/27 14:43",3310,4180],
-["11/27 15:37",4620,5210],
-["11/27 16:38",4620,5210],
-["11/27 17:34",5300,5500],
-["11/27 18:36",5300,5500],
-["11/27 19:40",3520,5590],
-["11/28 11:37",4460,7250]
-],
-  wz1: [
-["11/23 18:35",13910,16294],["11/24 06:23",13910,16294],["11/24 09:38",10525,11300],["11/24 11:03",13910,16294],
-["11/24 11:40",10525,12355],["11/24 12:40",10525,11300],["11/24 13:35",13910,16294],["11/24 14:34",10525,13910],
-["11/24 14:45",13910,16294],["11/24 15:38",13910,16294],["11/24 16:41",10525,11275],["11/24 17:28",13910,16294],
-["11/24 17:38",10800,11300],["11/24 18:40",10525,12355],["11/24 19:34",13910,16294],["11/24 20:33",13910,16294],
-["11/24 21:33",13910,16294],["11/24 22:38",10525,12355],["11/24 23:37",13910,16294],["11/25 00:39",10525,11300],
-["11/25 01:34",13910,16294],["11/25 02:36",13910,16294],["11/25 03:44",10525,11300],["11/25 04:35",13910,16294],
-["11/25 05:35",13910,16294],["11/25 06:35",13910,16294],["11/25 07:49",10525,10800],["11/25 08:37",13910,16294],
-["11/25 09:37",13910,16294],["11/25 10:34",13910,16294],["11/25 11:35",13910,16294],["11/25 12:36",13910,16294],
-["11/25 13:34",13910,16294],["11/25 14:33",13910,16294],["11/25 15:34",13910,16294],["11/25 16:34",13910,16294],
-["11/25 17:37",10800,13910],["11/25 18:34",13910,16294],["11/25 19:36",10525,10663],["11/25 20:32",13910,16294],
-["11/25 21:36",10525,10800],["11/25 22:41",10525,11000],["11/25 23:45",10525,11000],["11/26 00:35",10525,11000],
-["11/26 01:37",10525,12355],["11/26 02:42",10525,11750],["11/26 03:41",10525,11200],["11/26 04:43",13910,16294],
-["11/26 05:38",10525,13910],["11/26 06:35",10525,13910],["11/26 07:36",10525,13910],["11/26 08:34",13910,16294],
-["11/26 09:35",10525,11750],["11/26 10:34",10525,11750],["11/26 11:34",10525,11750],["11/26 12:34",10525,11750],
-["11/26 12:38",13910,16294],["11/26 13:33",13910,16294],["11/26 13:57",13910,16294],["11/26 14:34",13910,16294],
-["11/26 15:39",13910,16294],["11/26 16:34",13910,16294],["11/26 17:35",10525,11050],["11/26 18:33",10800,10800],
-["11/26 19:36",10525,11050],["11/26 20:34",10525,11050],["11/26 21:36",10525,10800],["11/26 22:35",10525,11300],
-["11/26 23:41",10525,11050],["11/27 00:36",10525,11300],["11/27 01:35",10525,11300],["11/27 03:38",10525,11050],
-["11/27 04:37",10525,10800],["11/27 06:44",10500,10888],["11/27 10:52",10525,11050],["11/27 12:40",10525,11300],
-["11/27 13:40",10525,11300],
-["11/27 14:43",10525,10663],
-["11/27 15:39",10525,11025],
-["11/27 16:38",10525,11025]
-]
-};
-
-function yen(n){ return "¥" + n.toLocaleString("ja-JP"); }
-function parseT(label){
-  var m = label.match(/(\d+)\/(\d+) (\d+):(\d+)/);
-  return new Date(2026, parseInt(m[1],10)-1, parseInt(m[2],10), parseInt(m[3],10), parseInt(m[4],10)).getTime();
+var H=JSON.parse(document.getElementById('history').textContent);
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function draw(id,hours){
+  var el=document.getElementById('chart-'+id);if(!el)return;
+  var rows=(H[id]||[]).map(function(r){return{t:Date.parse(r.checkedAt),a:r.lowestUnitPrice,b:r.top3AvgUnitPrice,c:r.medianUnitPrice};});
+  if(hours>0){var from=Date.now()-hours*3600e3;rows=rows.filter(function(r){return r.t>=from;});}
+  var vals=[];rows.forEach(function(r){[r.a,r.b,r.c].forEach(function(v){if(v!=null)vals.push(v);});});
+  if(vals.length<1){el.innerHTML='<p class="muted" style="padding:16px">この期間のデータはまだありません。</p>';return;}
+  var W=960,Ht=300,L=70,R=16,T=14,B=40,pw=W-L-R,ph=Ht-T-B;
+  var t0=rows[0].t,t1=rows[rows.length-1].t;if(t1===t0)t1=t0+3600e3;
+  var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals),pad=Math.max(300,(hi-lo)*.1);
+  var d0=Math.floor((lo-pad)/500)*500,d1=Math.ceil((hi+pad)/500)*500;
+  function X(t){return L+(t-t0)/(t1-t0)*pw;}function Y(v){return T+(d1-v)/(d1-d0)*ph;}
+  var line=css('--line'),dim=css('--dim'),s='';
+  for(var i=0;i<=4;i++){var v=d0+(d1-d0)*i/4,y=Y(v).toFixed(1);
+    s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" stroke="'+line+'"/>';
+    s+='<text x="'+(L-8)+'" y="'+y+'" dy="4" text-anchor="end" font-size="12" fill="'+dim+'">¥'+Math.round(v).toLocaleString('ja-JP')+'</text>';}
+  var span=t1-t0,step=span>10*864e5?864e5*7:span>2*864e5?864e5:6*3600e3;
+  var start=new Date(t0);start.setMinutes(0,0,0);if(step>=864e5)start.setHours(0);
+  for(var tt=start.getTime();tt<=t1;tt+=step){if(tt<t0)continue;var d=new Date(tt),x=X(tt).toFixed(1);
+    var lab=(d.getMonth()+1)+'/'+d.getDate()+(step<864e5?' '+('0'+d.getHours()).slice(-2)+':00':'');
+    s+='<line x1="'+x+'" x2="'+x+'" y1="'+T+'" y2="'+(Ht-B)+'" stroke="'+line+'" stroke-dasharray="2 4"/>';
+    s+='<text x="'+x+'" y="'+(Ht-B+18)+'" text-anchor="middle" font-size="12" fill="'+dim+'">'+lab+'</text>';}
+  function path(k){var p='',pen=false;rows.forEach(function(r){if(r[k]==null){pen=false;return;}
+    p+=(pen?'L':'M')+X(r.t).toFixed(1)+' '+Y(r[k]).toFixed(1)+' ';pen=true;});return p;}
+  s+='<path d="'+path('c')+'" fill="none" stroke="'+dim+'" stroke-opacity=".5" stroke-width="2" stroke-dasharray="5 4"/>';
+  s+='<path d="'+path('b')+'" fill="none" stroke="'+css('--ink')+'" stroke-width="1.6"/>';
+  s+='<path d="'+path('a')+'" fill="none" stroke="'+css('--accent')+'" stroke-width="2.4"/>';
+  rows.forEach(function(r){if(r.a==null)return;var d=new Date(r.t);
+    s+='<circle cx="'+X(r.t).toFixed(1)+'" cy="'+Y(r.a).toFixed(1)+'" r="'+(rows.length>60?2:3.5)+'" fill="'+css('--accent')+'" stroke="transparent" stroke-width="8"><title>'+d.toLocaleString('ja-JP')+
+    '\n最安 ¥'+r.a.toLocaleString('ja-JP')+(r.b!=null?'\n上位3件平均 ¥'+r.b.toLocaleString('ja-JP'):'')+
+    (r.c!=null?'\n中央値 ¥'+r.c.toLocaleString('ja-JP'):'')+'</title></circle>';});
+  el.innerHTML='<svg viewBox="0 0 '+W+' '+Ht+'" role="img" aria-label="価格の推移">'+s+'</svg>';
 }
-function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-
-function drawChart(id, rows){
-  var el = document.getElementById(id);
-  if(!el) return;
-  var W = 960, H = 330, L = 64, R = 14, T = 14, B = 58;
-  var pw = W - L - R, ph = H - T - B;
-  var times = rows.map(function(r){ return parseT(r[0]); });
-  var t0 = Math.min.apply(null, times), t1 = Math.max.apply(null, times);
-  var vals = [];
-  rows.forEach(function(r){ vals.push(r[1]); vals.push(r[2]); });
-  var vmin = Math.min.apply(null, vals), vmax = Math.max.apply(null, vals);
-  var pad = Math.max(300, (vmax - vmin) * 0.12);
-  var d0 = Math.floor((vmin - pad) / 500) * 500, d1 = Math.ceil((vmax + pad) / 500) * 500;
-  function X(t){ return L + (t - t0) / (t1 - t0) * pw; }
-  function Y(v){ return T + (d1 - v) / (d1 - d0) * ph; }
-  var low = cssVar("--chart-low") || "#e8590c";
-  var med = cssVar("--chart-med") || "#868e96";
-  var border = cssVar("--border") || "#ccc";
-  var dim = cssVar("--dim") || "#666";
-  var s = '';
-  // y gridlines: 5 ticks
-  var ticks = 5;
-  for(var i=0;i<=ticks;i++){
-    var v = d0 + (d1-d0)*i/ticks, y = Y(v);
-    s += '<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="'+border+'" stroke-width="1" stroke-dasharray="3 3"/>';
-    s += '<text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end" font-size="12" fill="'+dim+'">¥'+Math.round(v).toLocaleString("ja-JP")+'</text>';
-  }
-  // x ticks: detailed time labels every 6 hours (00 / 06 / 12 / 18 o'clock)
-  var stepH = 6;
-  var stepMs = stepH * 3600000;
-  var startDay = new Date(t0);
-  startDay.setHours(0, 0, 0, 0);
-  for(var tt = startDay.getTime(); tt <= t1; tt += stepMs){
-    if(tt < t0) continue;
-    var xTick = X(tt);
-    var dt = new Date(tt);
-    var hh = ("0" + dt.getHours()).slice(-2);
-    var label = (dt.getMonth() + 1) + "/" + dt.getDate() + " " + hh + ":00";
-    var isMidnight = dt.getHours() === 0;
-    s += '<line x1="' + xTick.toFixed(1) + '" y1="' + T + '" x2="' + xTick.toFixed(1) + '" y2="' + (T + ph) + '" stroke="' + border + '" stroke-width="' + (isMidnight ? 1.2 : 1) + '" stroke-dasharray="2 4" opacity="' + (isMidnight ? 0.95 : 0.6) + '"/>';
-    s += '<text x="' + xTick.toFixed(1) + '" y="' + (T + ph + 12) + '" text-anchor="end" font-size="11" font-weight="' + (isMidnight ? 700 : 400) + '" fill="' + dim + '" transform="rotate(-35 ' + xTick.toFixed(1) + ' ' + (T + ph + 12) + ')">' + label + '</text>';
-  }
-  function path(idx){
-    return rows.map(function(r,i){ return (i===0?"M":"L") + X(times[i]).toFixed(1) + " " + Y(r[idx]).toFixed(1); }).join(" ");
-  }
-  s += '<path d="'+path(2)+'" fill="none" stroke="'+med+'" stroke-width="2" stroke-dasharray="6 4"/>';
-  s += '<path d="'+path(1)+'" fill="none" stroke="'+low+'" stroke-width="3" stroke-linejoin="round"/>';
-  rows.forEach(function(r,i){
-    s += '<circle cx="'+X(times[i])+'" cy="'+Y(r[2])+'" r="2.5" fill="'+med+'"><title>'+r[0]+' 相場 '+yen(r[2])+'</title></circle>';
-    s += '<circle cx="'+X(times[i])+'" cy="'+Y(r[1])+'" r="3.5" fill="'+low+'"><title>'+r[0]+' 最安単価 '+yen(r[1])+' / 相場 '+yen(r[2])+'</title></circle>';
-  });
-  el.innerHTML = '<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + s + '</svg>';
-}
-
-function fillStats(id, rows){
-  var el = document.getElementById(id);
-  if(!el) return;
-  var lows = rows.map(function(r){ return r[1]; });
-  var mn = Math.min.apply(null, lows), mx = Math.max.apply(null, lows);
-  var change = lows[lows.length-1] - lows[0];
-  var chTxt = change === 0 ? "±¥0" : (change < 0 ? "▼ -¥" + Math.abs(change).toLocaleString("ja-JP") : "▲ +¥" + change.toLocaleString("ja-JP"));
-  el.innerHTML =
-    '<div class="stat"><div class="sl">期間内の最安単価</div><div class="sv num">'+yen(mn)+'</div></div>' +
-    '<div class="stat"><div class="sl">期間内の最高単価</div><div class="sv num">'+yen(mx)+'</div></div>' +
-    '<div class="stat"><div class="sl">期間の変動（初回→最新）</div><div class="sv num">'+chTxt+'</div></div>' +
-    '<div class="stat"><div class="sl">チェック回数</div><div class="sv num">'+rows.length+'回</div></div>';
-}
-
-function fillHist(id, rows){
-  var tb = document.querySelector("#" + id + " tbody");
-  if(!tb) return;
-  var html = "";
-  rows.slice().reverse().forEach(function(r){
-    html += "<tr><td>2026/" + r[0] + "</td><td>" + yen(r[1]) + "</td><td>" + yen(r[2]) + "</td></tr>";
-  });
-  tb.innerHTML = html;
-}
-
-function renderAll(){
-  drawChart("chart-vrx3", DATA.vrx3);
-  drawChart("chart-summer", DATA.summer);
-  drawChart("chart-wz1", DATA.wz1);
-}
-fillStats("stats-vrx3", DATA.vrx3);
-fillStats("stats-summer", DATA.summer);
-fillStats("stats-wz1", DATA.wz1);
-fillHist("hist-vrx3", DATA.vrx3);
-fillHist("hist-summer", DATA.summer);
-fillHist("hist-wz1", DATA.wz1);
-renderAll();
-if (window.matchMedia) {
-  var mq = window.matchMedia("(prefers-color-scheme: dark)");
-  if (mq.addEventListener) mq.addEventListener("change", renderAll);
-}
+document.querySelectorAll('.ranges').forEach(function(g){
+  var id=g.dataset.target;
+  g.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){
+    g.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');draw(id,+b.dataset.h);});});
+  draw(id,168);
+});
 </script>
-</body>
-</html>
+</body></html>
