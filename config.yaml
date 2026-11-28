@@ -1,0 +1,56 @@
+# タイヤ価格監視の設定。監視対象や検索語を変えるときはこのファイルだけ直す。
+
+size: "155/65R14"
+
+# 集計に使う市場（最安値・中央値の対象）
+markets:
+  rakuten: true
+  yahoo_shopping: true
+  yahoo_auction: true
+  amazon: false       # 対象外（自動取得の手段が無い）
+
+# 全対象に共通する除外キーワード（タイトルに含まれていたら除外）
+common_exclude:
+  - ホイール付
+  - ホイールセット
+  - ホイール付き
+  - アルミセット
+  - 中古
+  - USED
+  - 予約
+  - 入荷予定
+  - 取り寄せ
+
+targets:
+  - id: vrx3
+    name: ブリザック VRX3
+    season: winter
+    query: "ブリヂストン VRX3 155/65R14"
+    require_any: ["VRX3", "ＶＲＸ３", "VRX 3"]
+    exclude: []
+    unit_range: [4000, 16000]      # 1本あたりの妥当な範囲（外れたら読み取りミスとして除外）
+
+  - id: summer
+    name: 夏タイヤ（サマー）
+    season: summer
+    query: "155/65R14 サマータイヤ"
+    require_any: []
+    exclude: ["スタッドレス", "ブリザック", "BLIZZAK", "VRX", "WZ-1", "アイスガード", "iceGUARD",
+              "ウインター", "ウィンター", "冬タイヤ", "オールシーズン", "スノー"]
+    unit_range: [2500, 15000]
+
+  - id: wz1
+    name: ブリザック WZ-1
+    season: winter
+    query: "ブリヂストン WZ-1 155/65R14"
+    require_any: ["WZ-1", "WZ1", "ＷＺ-１", "ＷＺ１", "WZ－1"]
+    exclude: []
+    unit_range: [6000, 20000]
+
+# 各市場で1回に取得する件数（多すぎるとAPIの上限に当たる）
+fetch:
+  yahoo_auction_per_page: 50
+  request_delay_seconds: 3     # 同じサイトに続けてアクセスしないよう間を空ける
+
+# 履歴の保存上限（スナップショット数。1日2回×3対象で約5年分）
+history_limit: 11000

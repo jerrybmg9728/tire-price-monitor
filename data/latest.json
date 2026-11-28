@@ -1,0 +1,510 @@
+{
+ "checkedAt": "2026-11-28T13:02:42+09:00",
+ "size": "155/65R14",
+ "targets": [
+  {
+   "id": "vrx3",
+   "name": "ブリザック VRX3",
+   "season": "winter",
+   "query": "ブリヂストン VRX3 155/65R14",
+   "require_any": [
+    "VRX3",
+    "ＶＲＸ３",
+    "VRX 3"
+   ],
+   "exclude": [],
+   "unit_range": [
+    4000,
+    16000
+   ]
+  },
+  {
+   "id": "summer",
+   "name": "夏タイヤ（サマー）",
+   "season": "summer",
+   "query": "155/65R14 サマータイヤ",
+   "require_any": [],
+   "exclude": [
+    "スタッドレス",
+    "ブリザック",
+    "BLIZZAK",
+    "VRX",
+    "WZ-1",
+    "アイスガード",
+    "iceGUARD",
+    "ウインター",
+    "ウィンター",
+    "冬タイヤ",
+    "オールシーズン",
+    "スノー"
+   ],
+   "unit_range": [
+    2500,
+    15000
+   ]
+  },
+  {
+   "id": "wz1",
+   "name": "ブリザック WZ-1",
+   "season": "winter",
+   "query": "ブリヂストン WZ-1 155/65R14",
+   "require_any": [
+    "WZ-1",
+    "WZ1",
+    "ＷＺ-１",
+    "ＷＺ１",
+    "WZ－1"
+   ],
+   "exclude": [],
+   "unit_range": [
+    6000,
+    20000
+   ]
+  }
+ ],
+ "snapshots": {
+  "vrx3": {
+   "checkedAt": "2026-11-28T13:02:42+09:00",
+   "status": "ok",
+   "lowestUnitPrice": 6600,
+   "lowestSetPrice": 26400,
+   "lowestStore": "個人出品",
+   "lowestMarket": "yahoo_auction",
+   "lowestUrl": "https://auctions.yahoo.co.jp/jp/auction/p1253861363",
+   "medianUnitPrice": 7480,
+   "top3AvgUnitPrice": 6753,
+   "offerCount": 75,
+   "perMarket": {
+    "rakuten": 40,
+    "yahoo_shopping": 29,
+    "yahoo_auction": 6,
+    "amazon": 0
+   },
+   "marketStatus": {
+    "rakuten": "ok",
+    "yahoo_shopping": "ok",
+    "yahoo_auction": "ok"
+   },
+   "excluded": {
+    "除外語「ホイールセット」": 3,
+    "除外語「ホイール付」": 1,
+    "サイズ違い": 3,
+    "単価が範囲外": 6,
+    "入札あり": 18,
+    "タイトルに別の価格の記載あり": 16,
+    "除外語「中古」": 1,
+    "新品以外": 4,
+    "本数の記載なし": 4
+   },
+   "offers": [
+    {
+     "market": "yahoo_auction",
+     "store": "個人出品",
+     "title": "送料無料 在庫新品 スタッドレス 2024年製 155/65R14 BS VRX3 4本セット",
+     "price": 26400,
+     "quantity": 4,
+     "unit_price": 6600,
+     "url": "https://auctions.yahoo.co.jp/jp/auction/p1253861363",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_shopping",
+     "store": "カーパーツ アクセス",
+     "title": "BLIZZAK VRX3 155/65R14 75Q ※2026年製/在庫限り",
+     "price": 6830,
+     "quantity": 1,
+     "unit_price": 6830,
+     "url": "https://store.shopping.yahoo.co.jp/carparts-choice/vrx315565r1475q.html",
+     "shipping": 0,
+     "inferred": true
+    },
+    {
+     "market": "yahoo_shopping",
+     "store": "JNタイヤ館",
+     "title": "【新品】2026年製 BRIDGESTONE BLIZZAK VRX3 155/65R14 75Q スタッドレスタイヤ 4本セット ブリヂストン ブリザック",
+     "price": 27320,
+     "quantity": 4,
+     "unit_price": 6830,
+     "url": "https://store.shopping.yahoo.co.jp/jn-tire/vrx3-155-65r14-4set.html",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_auction",
+     "store": "個人出品",
+     "title": "個人宅配送OK【4本】2026年製 VRXIII 155/65R14 BRIDGESTONE BLIZZAK ブリヂストン ブリザック BS VRX3 沖縄/離島以外10",
+     "price": 27780,
+     "quantity": 4,
+     "unit_price": 6945,
+     "url": "https://auctions.yahoo.co.jp/jp/auction/m1253990656",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "rakuten",
+     "store": "モーターズボックス楽天市場店",
+     "title": "【在庫あり】【2026年製】【新品】BRIDGESTONE 155/65R14 BLIZZAK VRX3 スタッドレスタイヤ 4本セット 汎用タイプ",
+     "price": 28000,
+     "quantity": 4,
+     "unit_price": 7000,
+     "url": "https://item.rakuten.co.jp/motorsbox/a58/",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "rakuten",
+     "store": "モーターズボックス楽天市場店",
+     "title": "【在庫あり】【2026年製造】BRIDGESTONE スタッドレスタイヤ 汎用タイプ VRX3 155/65R14 1本 a116",
+     "price": 7000,
+     "quantity": 1,
+     "unit_price": 7000,
+     "url": "https://item.rakuten.co.jp/motorsbox/a116/",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "rakuten",
+     "store": "タイヤ&ホイールプラザ",
+     "title": "【26年製在庫あり!2営業日内発送】155/65R14 75Q BRIDGESTONE ブリヂストン BLIZZAK ブリザック VRX3 14インチ 【乗用車用スタッドレスタイヤ】",
+     "price": 7000,
+     "quantity": 1,
+     "unit_price": 7000,
+     "url": "https://item.rakuten.co.jp/tire-wheel-plaza/01-02-001-0022-2967/",
+     "shipping": 0,
+     "inferred": true
+    },
+    {
+     "market": "rakuten",
+     "store": "タイヤショップZERO楽天市場店",
+     "title": "【2026年製造】【取付対象】送料無料 BLIZZAK VRX3 155/65R14 75Q 4本セット 新品スタッドレスタイヤ 冬タイヤ ブリヂストン BRIDGESTONE ブリザック",
+     "price": 28320,
+     "quantity": 4,
+     "unit_price": 7080,
+     "url": "https://item.rakuten.co.jp/tire-zero/10042399/",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_shopping",
+     "store": "タイヤショップZERO",
+     "title": "2026年製造 ブリヂストン BLIZZAK VRX3 155/65R14 75Q スタッドレスタイヤ 4本セット",
+     "price": 28320,
+     "quantity": 4,
+     "unit_price": 7080,
+     "url": "https://store.shopping.yahoo.co.jp/tire-zero/x4si-std-vrx3-155-65r14-75q.html",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "rakuten",
+     "store": "タイヤショップZERO楽天市場店",
+     "title": "【2026年製造】【取付対象】送料無料 BLIZZAK VRX3 155/65R14 75Q 1本価格 新品スタッドレスタイヤ 冬タイヤ ブリヂストン BRIDGESTONE ブリザック",
+     "price": 7099,
+     "quantity": 1,
+     "unit_price": 7099,
+     "url": "https://item.rakuten.co.jp/tire-zero/10042177/",
+     "shipping": 0,
+     "inferred": false
+    }
+   ],
+   "previousLowestUnitPrice": null,
+   "degraded": []
+  },
+  "summer": {
+   "checkedAt": "2026-11-28T13:02:42+09:00",
+   "status": "ok",
+   "lowestUnitPrice": 3310,
+   "lowestSetPrice": 13240,
+   "lowestStore": "AUTOWAY(オートウェイ)",
+   "lowestMarket": "rakuten",
+   "lowestUrl": "https://item.rakuten.co.jp/autoway/mt00336/",
+   "medianUnitPrice": 5230,
+   "top3AvgUnitPrice": 3310,
+   "offerCount": 53,
+   "perMarket": {
+    "rakuten": 16,
+    "yahoo_shopping": 29,
+    "yahoo_auction": 8,
+    "amazon": 0
+   },
+   "marketStatus": {
+    "rakuten": "ok",
+    "yahoo_shopping": "ok",
+    "yahoo_auction": "ok"
+   },
+   "excluded": {
+    "除外語「スタッドレス」": 10,
+    "除外語「ホイールセット」": 5,
+    "サイズ違い": 17,
+    "本数不明": 1,
+    "単価が範囲外": 1,
+    "本数の記載なし": 3,
+    "新品以外": 18,
+    "除外語「中古」": 20,
+    "入札あり": 1
+   },
+   "offers": [
+    {
+     "market": "rakuten",
+     "store": "AUTOWAY(オートウェイ)",
+     "title": "【取付対象】MAXTREK マックストレック MAXIMUS M2 155/65R14 (155/65/14 155-65-14 155/65-14) サマータイヤ 夏タイヤ 単品 2本 4本 14インチ",
+     "price": 3310,
+     "quantity": 1,
+     "unit_price": 3310,
+     "url": "https://item.rakuten.co.jp/autoway/mt00336/",
+     "shipping": 0,
+     "inferred": true
+    },
+    {
+     "market": "yahoo_shopping",
+     "store": "AUTOWAY(オートウェイ)",
+     "title": "155/65R14 4本セット タイヤ サマータイヤ MAXTREK マックストレック MAXIMUS M2",
+     "price": 13240,
+     "quantity": 4,
+     "unit_price": 3310,
+     "url": "https://store.shopping.yahoo.co.jp/autoway/mt00336-4.html",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_shopping",
+     "store": "AUTOWAY(オートウェイ)",
+     "title": "155/65R14 タイヤ サマータイヤ MAXTREK マックストレック MAXIMUS M2",
+     "price": 3310,
+     "quantity": 1,
+     "unit_price": 3310,
+     "url": "https://store.shopping.yahoo.co.jp/autoway/mt00336.html",
+     "shipping": 0,
+     "inferred": true
+    },
+    {
+     "market": "yahoo_auction",
+     "store": "ストア出品",
+     "title": "155/65R14 75T 4本セット 2026年製造 新品サマータイヤ APTANY RP203A 送料無料 155/65/14",
+     "price": 13520,
+     "quantity": 4,
+     "unit_price": 3380,
+     "url": "https://auctions.yahoo.co.jp/jp/auction/g1254015461",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_auction",
+     "store": "ストア出品",
+     "title": "155/65R14 75T 4本セット 2026年製造 新品サマータイヤ APTANY RP203A 送料無料 155/65/14",
+     "price": 13520,
+     "quantity": 4,
+     "unit_price": 3380,
+     "url": "https://auctions.yahoo.co.jp/jp/auction/j1253942919",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_auction",
+     "store": "ストア出品",
+     "title": "155/65R14 75T 2本セット 2026年製造 新品サマータイヤ APTANY RP203A 送料無料 155/65/14",
+     "price": 6760,
+     "quantity": 2,
+     "unit_price": 3380,
+     "url": "https://auctions.yahoo.co.jp/jp/auction/j1253968441",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_shopping",
+     "store": "AUTOWAY(オートウェイ)",
+     "title": "155/65R14 タイヤ サマータイヤ ZEETEX ジーテックス ZT6000 ECO",
+     "price": 3460,
+     "quantity": 1,
+     "unit_price": 3460,
+     "url": "https://store.shopping.yahoo.co.jp/autoway/zx00515.html",
+     "shipping": 0,
+     "inferred": true
+    },
+    {
+     "market": "rakuten",
+     "store": "オートバックス楽天市場店",
+     "title": "155/65R14 夏タイヤ クムホ マーシャル MH15 1本 KUMHO MARSHAL MH15",
+     "price": 3500,
+     "quantity": 1,
+     "unit_price": 3500,
+     "url": "https://item.rakuten.co.jp/autobacs-ec/8808956293444/",
+     "shipping": null,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_shopping",
+     "store": "オートバックスYahoo!ショッピング店",
+     "title": "155/65R14 75T 夏タイヤ クムホ マーシャル MH15 4本セット KUMHO MARSHAL MH15",
+     "price": 14000,
+     "quantity": 4,
+     "unit_price": 3500,
+     "url": "https://store.shopping.yahoo.co.jp/autobacs/9502100006953.html",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "rakuten",
+     "store": "オートバックス楽天市場店",
+     "title": "155/65R14 夏タイヤ クムホ エクスタ HS52 4本セット KUMHO ECSTA HS52",
+     "price": 14960,
+     "quantity": 4,
+     "unit_price": 3740,
+     "url": "https://item.rakuten.co.jp/autobacs-ec/9502100008329/",
+     "shipping": 0,
+     "inferred": false
+    }
+   ],
+   "previousLowestUnitPrice": null,
+   "degraded": []
+  },
+  "wz1": {
+   "checkedAt": "2026-11-28T13:02:42+09:00",
+   "status": "ok",
+   "lowestUnitPrice": 8000,
+   "lowestSetPrice": 32000,
+   "lowestStore": "個人出品",
+   "lowestMarket": "yahoo_auction",
+   "lowestUrl": "https://auctions.yahoo.co.jp/jp/auction/m1253966389",
+   "medianUnitPrice": 12970,
+   "top3AvgUnitPrice": 9651,
+   "offerCount": 91,
+   "perMarket": {
+    "rakuten": 42,
+    "yahoo_shopping": 31,
+    "yahoo_auction": 18,
+    "amazon": 0
+   },
+   "marketStatus": {
+    "rakuten": "ok",
+    "yahoo_shopping": "ok",
+    "yahoo_auction": "ok"
+   },
+   "excluded": {
+    "単価が範囲外": 5,
+    "サイズ違い": 2,
+    "除外語「ホイールセット」": 7,
+    "本数の記載なし": 4,
+    "新品以外": 6,
+    "除外語「中古」": 5,
+    "即決なし": 9,
+    "タイトルに別の価格の記載あり": 1
+   },
+   "offers": [
+    {
+     "market": "yahoo_auction",
+     "store": "個人出品",
+     "title": "在庫限り 新品2025年冬 155/65R14 75Q 4本セット スタッドレス ブリヂストン ブリザック WZ-1 WZ1 タイヤ N-BOX サクラ デイズ タント ミラ",
+     "price": 32000,
+     "quantity": 4,
+     "unit_price": 8000,
+     "url": "https://auctions.yahoo.co.jp/jp/auction/m1253966389",
+     "shipping": null,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_auction",
+     "store": "ストア出品",
+     "title": "2025年製 BRIDGESTONE BLIZZAK WZ-1 155/65R14 75Q 4本セット ブリヂストン ブリザック スタッドレス 最高性能 155/65-14 4本SET",
+     "price": 41712,
+     "quantity": 4,
+     "unit_price": 10428,
+     "url": "https://auctions.yahoo.co.jp/jp/auction/n1252833356",
+     "shipping": null,
+     "inferred": false
+    },
+    {
+     "market": "rakuten",
+     "store": "タイヤショップZett楽天市場店",
+     "title": "【取付対象】【2025年製 国内正規品 在庫限り】155/65R14 75Q 4本セット 新品 BRIDGESTONE BLIZZAK WZ-1 (ブリヂストン ブリザック WZ1) スタッドレス 冬 タイヤ 155/65/14 屋内保管 N-BOX スペーシア タント ワゴンR ムーヴ デイズ ルークス アルト ミラ 軽 自動車",
+     "price": 42100,
+     "quantity": 4,
+     "unit_price": 10525,
+     "url": "https://item.rakuten.co.jp/mytyre001/wbs-wz11556514-4/",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "rakuten",
+     "store": "タイヤショップZett楽天市場店",
+     "title": "〈2025年 国内正規品 在庫限り〉【取付対象】155/65R14 75Q 4本セット 新品 BRIDGESTONE BLIZZAK WZ-1(ブリヂストン ブリザック WZ1) スタッドレス 冬 タイヤ 155/65/14 屋内保管 N-BOX スペーシア タント ワゴンR ムーヴ 軽 デイズ ルークス アルト ミラ",
+     "price": 42100,
+     "quantity": 4,
+     "unit_price": 10525,
+     "url": "https://item.rakuten.co.jp/mytyre001/wbs-wz11556514ol1-4/",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "rakuten",
+     "store": "タイヤショップトレッド",
+     "title": "【2025年 新品 冬】155/65R14 BLIZZAK WZ-1 ブリヂストン 4本セット 冬 タイヤ スタッドレス 倉庫保管 N-BOX N-WGN N-ONE タント サクラ ピクシス デイズ ステラ ルクラ アルト スペーシア ekワゴン ミラ ムーヴ 臨",
+     "price": 42100,
+     "quantity": 4,
+     "unit_price": 10525,
+     "url": "https://item.rakuten.co.jp/tire-shop-tread/e073-00053678/",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_auction",
+     "store": "ストア出品",
+     "title": "【2025年 新品 冬】155/65R14 BLIZZAK WZ-1 ブリヂストン 4本セット 冬 タイヤ スタッドレス 倉庫保管 N-BOX サクラ 臨",
+     "price": 42100,
+     "quantity": 4,
+     "unit_price": 10525,
+     "url": "https://auctions.yahoo.co.jp/jp/auction/b1253758259",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_auction",
+     "store": "ストア出品",
+     "title": "155/65R14 BRIDGESTONE WZ-1 4本セット 新品未使用 スタッドレス ブリヂストン ブリザック デイズ ルークス N-BOX アルト デリカミニ ム-ヴ",
+     "price": 42100,
+     "quantity": 4,
+     "unit_price": 10525,
+     "url": "https://auctions.yahoo.co.jp/jp/auction/v1251224837",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_auction",
+     "store": "ストア出品",
+     "title": "155/65R14 BRIDGESTONE WZ-1 4本セット 新品未使用 スタッドレス ブリヂストン ブリザック デイズ ルークス N-BOX アルト デリカミニ ム-ヴ",
+     "price": 42100,
+     "quantity": 4,
+     "unit_price": 10525,
+     "url": "https://auctions.yahoo.co.jp/jp/auction/f1251222621",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_shopping",
+     "store": "タイヤショップZETT",
+     "title": "在庫限り【2025年製 国内正規品】155/65R14 75Q BRIDGESTONE BLIZZAK WZ-1 (ブリヂストン ブリザック WZ1) スタッドレス 冬 タイヤ 4本セット 新品 N-BOX 軽",
+     "price": 42100,
+     "quantity": 4,
+     "unit_price": 10525,
+     "url": "https://store.shopping.yahoo.co.jp/tireshopzett/ys-wbs-wz11556514-4.html",
+     "shipping": 0,
+     "inferred": false
+    },
+    {
+     "market": "yahoo_shopping",
+     "store": "タイヤショップトレッド",
+     "title": "【2025年 新品 冬】155/65R14 BLIZZAK WZ-1 ブリヂストン 4本セット 冬 タイヤ スタッドレス 倉庫保管 N-BOX サクラ 臨",
+     "price": 42100,
+     "quantity": 4,
+     "unit_price": 10525,
+     "url": "https://store.shopping.yahoo.co.jp/tire-shop-tread/e073-00053678.html",
+     "shipping": 0,
+     "inferred": false
+    }
+   ],
+   "previousLowestUnitPrice": null,
+   "degraded": []
+  }
+ }
+}
