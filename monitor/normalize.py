@@ -52,9 +52,9 @@ def has_size(title: str, size: str) -> bool:
 
 
 def parse_quantity(title: str) -> int | None:
-    """タイトルの「4本」「1本」などから本数を読む。複数あれば多い方（セット表記を優先）。"""
+    """タイトルの「4本」「1本」などから本数を読む。違う本数が複数書かれていたら決めない（None）。"""
     found = {int(n) for n in re.findall(r"(?<!\d)([124])\s*本", normalize_text(title))}
-    return max(found) if found else None
+    return found.pop() if len(found) == 1 else None
 
 
 _PRICE_IN_TITLE = re.compile(
@@ -62,10 +62,17 @@ _PRICE_IN_TITLE = re.compile(
 )
 
 
+_NOT_ITEM_PRICE = ("OFF", "オフ", "引", "割引", "クーポン", "値引")
+
+
 def mentions_other_price(title: str, price: int) -> bool:
     """タイトルに表示価格と違う金額が書かれているか（ヤフオクの「4本26,800円～」など）。"""
-    for a, b in _PRICE_IN_TITLE.findall(normalize_text(title)):
-        value = int((a or b).replace(",", ""))
+    text = normalize_text(title)
+    for m in _PRICE_IN_TITLE.finditer(text):
+        before, after = text[max(0, m.start() - 4):m.start()], text[m.end():m.end() + 5].upper()
+        if "送料" in before or after.startswith(_NOT_ITEM_PRICE):
+            continue
+        value = int((m.group(1) or m.group(2)).replace(",", ""))
         if value >= 1000 and value != price:
             return True
     return False
@@ -80,8 +87,8 @@ def _contains_any(title: str, words: list[str]) -> str | None:
 
 
 def _auction_reason(raw: Raw) -> str | None:
-    if raw.condition and raw.condition.upper() != "NEW":
-        return f"新品以外（{raw.condition}）"
+    if (raw.condition or "").upper() != "NEW":
+        return f"新品以外（{raw.condition or '状態不明'}）"
     if raw.fixed_price is False:
         return "即決なし（落札額が未確定）"
     if raw.bids:

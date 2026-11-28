@@ -12,7 +12,7 @@ import urllib.parse
 import requests
 
 from monitor.normalize import Raw
-from monitor.sources import SourceResult, error_status
+from monitor.sources import SourceResult, error_status, to_int
 
 DEFAULT_ENDPOINT = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601"
 
@@ -20,15 +20,18 @@ DEFAULT_ENDPOINT = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search
 def parse(data: dict) -> list[Raw]:
     raws = []
     for row in data.get("Items") or []:
+        if not isinstance(row, dict):
+            continue
         it = row.get("Item", row)   # formatVersion 1 は {"Item": {...}}、2 はそのまま
-        if not it.get("itemName") or not it.get("itemPrice"):
+        price = to_int(it.get("itemPrice")) if isinstance(it, dict) else None
+        if not price or not it.get("itemName"):
             continue
         raws.append(Raw(
             market="rakuten",
-            store=it.get("shopName") or "楽天市場",
-            title=it["itemName"],
-            price=int(it["itemPrice"]),
-            url=it.get("itemUrl") or "",
+            store=str(it.get("shopName") or "楽天市場"),
+            title=str(it["itemName"]),
+            price=price,
+            url=str(it.get("itemUrl") or ""),
             shipping=0 if it.get("postageFlag") == 0 else None,   # 0=送料込
         ))
     return raws

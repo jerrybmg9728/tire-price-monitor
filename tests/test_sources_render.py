@@ -61,7 +61,7 @@ def test_history_append_is_immutable_and_trims():
     h2 = store.append_history(h, {"a": snap}, limit_per_target=1)
     assert len(h["targets"]["a"]) == 1 and h2["targets"]["a"] == [
         {"checkedAt": "2", "lowestUnitPrice": None, "top3AvgUnitPrice": None, "medianUnitPrice": None,
-         "offerCount": None, "status": None}]
+         "offerCount": None, "status": None, "degraded": None}]
     assert store.previous_lowest(h, "a") == 1 and store.previous_lowest(h2, "a") is None
 
 
@@ -75,3 +75,36 @@ def test_render_page_escapes_and_shows_values():
     assert "¥8,500" in page and "前回比 −¥500" in page and "2026/11/28 12:31" in page
     assert "<script>alert(1)</script>" not in page and "&lt;script&gt;" in page
     assert "店&lt;b&gt;" in page and "サイズ違い 2件" in page
+
+
+def test_parsers_skip_malformed_rows():
+    assert [r.price for r in rakuten.parse({"Items": ["x", {"itemName": "A", "itemPrice": "1,980"},
+                                                    {"itemName": "B", "itemPrice": None}]})] == [1980]
+    assert [r.price for r in yahoo_shopping.parse({"hits": [None, {"name": "A", "price": 12.5, "seller": "str"}]})] == [12]
+    data = {"props": {"pageProps": {"initialState": {"search": {"items": {"listing": {"items": [
+        "bad", {"auctionId": "a b", "title": "t", "price": "3,000", "seller": "str", "bidCount": None}]}}}}}}}
+    [r] = yahoo_auction.parse(f'<script id="__NEXT_DATA__" type="application/json">{json.dumps(data)}</script>')
+    assert r.price == 3000 and r.bids == 0 and r.url.endswith("/a%20b") and r.condition is None
+
+
+def test_to_int():
+    from monitor.sources import to_int
+    assert [to_int(v) for v in [1980, "1,980円", 12.9, "", None, True, "abc"]] == [1980, 1980, 12, None, None, None, None]
+
+
+def test_safe_url_blocks_scripts():
+    assert render.safe_url("javascript:alert(1)") == "#"
+    assert render.safe_url("data:text/html,x") == "#"
+    assert render.safe_url('https://a.jp/?q="x"') == "https://a.jp/?q=&quot;x&quot;"
+
+
+def test_render_warnings():
+    o = Offer("rakuten", "S", "t", 34000, 4, 8500, "https://x", 0)
+    base = summarize([o], "2026-11-28T12:31:00+09:00", {"rakuten": "ok"}, {})
+    stale = {**base, "stale": True, "staleAt": "2026-11-28T13:31:00+09:00"}
+    degraded = {**base, "degraded": ["yahoo_shopping"]}
+    t = [{"id": "v", "name": "V", "season": "winter"}]
+    p1 = render.page({"checkedAt": base["checkedAt"], "size": "s", "targets": t, "snapshots": {"v": stale}}, {})
+    p2 = render.page({"checkedAt": base["checkedAt"], "size": "s", "targets": t, "snapshots": {"v": degraded}}, {})
+    assert "全市場で取得に失敗" in p1 and "2026/11/28 13:31" in p1
+    assert "Yahoo!ショッピング の取得に失敗" in p2

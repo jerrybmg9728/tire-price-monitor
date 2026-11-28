@@ -6,7 +6,7 @@ import os
 import requests
 
 from monitor.normalize import Raw
-from monitor.sources import SourceResult, error_status
+from monitor.sources import SourceResult, error_status, to_int
 
 API_URL = "https://shopping.yahooapis.jp/ShoppingWebService/V3/itemSearch"
 _SHIPPING_FREE = 2   # shipping.code: 1=設定なし 2=送料無料 3=条件付き送料無料
@@ -15,15 +15,20 @@ _SHIPPING_FREE = 2   # shipping.code: 1=設定なし 2=送料無料 3=条件付�
 def parse(data: dict) -> list[Raw]:
     raws = []
     for h in data.get("hits") or []:
-        if not h.get("name") or not h.get("price"):
+        if not isinstance(h, dict):
             continue
+        price = to_int(h.get("price"))
+        if not h.get("name") or not price:
+            continue
+        seller = h.get("seller") if isinstance(h.get("seller"), dict) else {}
+        shipping = h.get("shipping") if isinstance(h.get("shipping"), dict) else {}
         raws.append(Raw(
             market="yahoo_shopping",
-            store=(h.get("seller") or {}).get("name") or "Yahoo!ショッピング",
-            title=h["name"],
-            price=int(h["price"]),
-            url=h.get("url") or "",
-            shipping=0 if (h.get("shipping") or {}).get("code") == _SHIPPING_FREE else None,
+            store=str(seller.get("name") or "Yahoo!ショッピング"),
+            title=str(h["name"]),
+            price=price,
+            url=str(h.get("url") or ""),
+            shipping=0 if shipping.get("code") == _SHIPPING_FREE else None,
         ))
     return raws
 

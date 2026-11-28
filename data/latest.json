@@ -1,5 +1,5 @@
 {
- "checkedAt": "2026-11-28T12:43:18+09:00",
+ "checkedAt": "2026-11-28T12:48:10+09:00",
  "size": "155/65R14",
  "targets": [
   {
@@ -64,7 +64,7 @@
  ],
  "snapshots": {
   "vrx3": {
-   "checkedAt": "2026-11-28T12:43:18+09:00",
+   "checkedAt": "2026-11-28T12:48:10+09:00",
    "status": "ok",
    "lowestUnitPrice": 6600,
    "lowestSetPrice": 26400,
@@ -87,12 +87,12 @@
     "amazon": "未接続（Creators API の資格情報待ち）"
    },
    "excluded": {
-    "入札あり": 18,
-    "タイトルに別の価格の記載あり": 20,
+    "入札あり": 17,
+    "タイトルに別の価格の記載あり": 18,
+    "新品以外": 3,
     "除外語「中古」": 1,
-    "新品以外": 2,
-    "サイズ違い": 1,
-    "本数の記載なし": 2
+    "本数の記載なし": 4,
+    "サイズ違い": 1
    },
    "offers": [
     {
@@ -162,10 +162,11 @@
      "inferred": false
     }
    ],
-   "previousLowestUnitPrice": null
+   "previousLowestUnitPrice": null,
+   "degraded": []
   },
   "summer": {
-   "checkedAt": "2026-11-28T12:43:18+09:00",
+   "checkedAt": "2026-11-28T12:48:10+09:00",
    "status": "ok",
    "lowestUnitPrice": 3380,
    "lowestSetPrice": 13520,
@@ -189,8 +190,8 @@
    },
    "excluded": {
     "本数の記載なし": 3,
-    "新品以外": 18,
-    "除外語「中古」": 19,
+    "除外語「中古」": 20,
+    "新品以外": 17,
     "入札あり": 1
    },
    "offers": [
@@ -294,23 +295,24 @@
      "inferred": false
     }
    ],
-   "previousLowestUnitPrice": null
+   "previousLowestUnitPrice": null,
+   "degraded": []
   },
   "wz1": {
-   "checkedAt": "2026-11-28T12:43:18+09:00",
+   "checkedAt": "2026-11-28T12:48:10+09:00",
    "status": "ok",
    "lowestUnitPrice": 8000,
    "lowestSetPrice": 32000,
    "lowestStore": "個人出品",
    "lowestMarket": "yahoo_auction",
    "lowestUrl": "https://auctions.yahoo.co.jp/jp/auction/m1253966389",
-   "medianUnitPrice": 10750,
+   "medianUnitPrice": 10975,
    "top3AvgUnitPrice": 9651,
-   "offerCount": 17,
+   "offerCount": 18,
    "perMarket": {
     "rakuten": 0,
     "yahoo_shopping": 0,
-    "yahoo_auction": 17,
+    "yahoo_auction": 18,
     "amazon": 0
    },
    "marketStatus": {
@@ -320,13 +322,13 @@
     "amazon": "未接続（Creators API の資格情報待ち）"
    },
    "excluded": {
-    "本数の記載なし": 3,
+    "本数の記載なし": 4,
     "新品以外": 6,
     "除外語「中古」": 5,
-    "タイトルに別の価格の記載あり": 4,
     "即決なし": 9,
     "除外語「ホイールセット」": 5,
-    "単価が範囲外": 1
+    "単価が範囲外": 2,
+    "タイトルに別の価格の記載あり": 1
    },
    "offers": [
     {
@@ -440,7 +442,8 @@
      "inferred": false
     }
    ],
-   "previousLowestUnitPrice": null
+   "previousLowestUnitPrice": null,
+   "degraded": []
   }
  }
 }

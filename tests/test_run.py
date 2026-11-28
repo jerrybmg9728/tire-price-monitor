@@ -36,3 +36,25 @@ def test_save_and_load_json(tmp_path):
     store.save_json(p, {"日本語": 1})
     assert json.loads(p.read_text(encoding="utf-8")) == {"日本語": 1}
     assert store.load_json(p, {}) == {"日本語": 1}
+
+
+def test_check_target_survives_crashing_source(monkeypatch):
+    def boom(target, cfg):
+        raise TypeError("bad data")
+    monkeypatch.setattr(run, "SOURCES", {"rakuten": boom,
+                                         "yahoo_shopping": fake([Raw("yahoo_shopping", "Y", "VRX3 155/65R14 4本", 34000, "u")])})
+    s = run.check_target(TARGET, CFG, "t")
+    assert s["marketStatus"]["rakuten"] == "エラー: TypeError" and s["lowestUnitPrice"] == 8500
+
+
+def test_settle():
+    ok = {"checkedAt": "2", "marketStatus": {"rakuten": "ok", "amazon": "未接続"}}
+    part = {"checkedAt": "2", "marketStatus": {"rakuten": "ok", "yahoo_shopping": "エラー: X 500"}}
+    dead = {"checkedAt": "2", "marketStatus": {"rakuten": "エラー: X 403", "amazon": "未接続"}}
+    prev = {"checkedAt": "1", "lowestUnitPrice": 7000, "marketStatus": {"rakuten": "ok"}}
+    assert run.settle(ok, prev) == ({**ok, "degraded": []}, True)
+    assert run.settle(part, prev)[0]["degraded"] == ["yahoo_shopping"]
+    shown, record = run.settle(dead, prev)
+    assert not record and shown["stale"] and shown["lowestUnitPrice"] == 7000 and shown["staleAt"] == "2"
+    shown, record = run.settle(dead, None)
+    assert not record and shown["stale"]

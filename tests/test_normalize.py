@@ -29,6 +29,7 @@ def test_parse_quantity():
     assert parse_quantity("タイヤ１本 155/65R14") == 1
     assert parse_quantity("2本セット") == 2
     assert parse_quantity("155/65R14 75Q") is None
+    assert parse_quantity("1本価格 4本セット購入で送料無料") is None   # 本数が2通り書かれている → 決めない
 
 
 def test_mentions_other_price():
@@ -36,6 +37,9 @@ def test_mentions_other_price():
     assert mentions_other_price("送料込4本セット\\26,500円～", 13500)
     assert not mentions_other_price("VRX3 4本 25,000円", 25000)
     assert not mentions_other_price("VRX3 4本", 25000)
+    assert not mentions_other_price("VRX3 4本 5,000円OFFクーポン", 25000)
+    assert not mentions_other_price("VRX3 4本 送料1,500円", 25000)
+    assert not mentions_other_price("VRX3 4本 3000円引き", 25000)
 
 
 def test_judge_ok_set_price():
@@ -87,3 +91,5 @@ def test_judge_auction_rules():
     assert "入札あり" in reason
     _, reason = judge(raw("VRX3 155/65R14 新品", 20000, **base), VRX3, COMMON, SIZE)
     assert "本数の記載なし" in reason
+    _, reason = judge(raw("VRX3 155/65R14 4本", 28000, **{**base, "condition": None}), VRX3, COMMON, SIZE)
+    assert "新品以外" in reason

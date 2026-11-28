@@ -4,7 +4,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-HISTORY_KEYS = ("checkedAt", "lowestUnitPrice", "top3AvgUnitPrice", "medianUnitPrice", "offerCount", "status")
+HISTORY_KEYS = ("checkedAt", "lowestUnitPrice", "top3AvgUnitPrice", "medianUnitPrice", "offerCount", "status",
+                "degraded")
 
 
 def load_json(path: Path, default: dict) -> dict:

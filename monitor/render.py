@@ -4,11 +4,18 @@ from __future__ import annotations
 import datetime as dt
 import html
 import json
+import urllib.parse
 
 from monitor.aggregate import MARKET_LABEL
 
 SEASON = {"winter": ("冬用", "winter"), "summer": ("夏用", "summer")}
 E = html.escape
+
+
+def safe_url(u: str | None) -> str:
+    """http/https 以外（javascript: など）はリンクにしない。"""
+    u = (u or "").strip()
+    return E(u) if urllib.parse.urlsplit(u).scheme in ("http", "https") else "#"
 
 
 def yen(v: int | None) -> str:
@@ -50,7 +57,7 @@ def _offers_table(snap: dict) -> str:
         note = "（本数は価格から推定）" if o["inferred"] else ""
         ship = "送料無料" if o["shipping"] == 0 else "送料別・要確認"
         rows.append(
-            f'<tr><td class="n">{i}</td><td><a href="{E(o["url"])}" target="_blank" rel="noopener">{E(o["title"])}</a>'
+            f'<tr><td class="n">{i}</td><td><a href="{safe_url(o["url"])}" target="_blank" rel="noopener noreferrer">{E(o["title"])}</a>'
             f'<div class="muted">{E(MARKET_LABEL[o["market"]])} ・ {E(o["store"])} ・ {ship}</div></td>'
             f'<td class="r"><b>{yen(o["unit_price"])}</b>/本<div class="muted">{qty} {yen(o["price"])}{note}</div></td></tr>'
         )
@@ -65,6 +72,16 @@ def _excluded(snap: dict) -> str:
     return f'<p class="muted small">集計から除いた出品：{parts}</p>'
 
 
+def _warning(snap: dict) -> str:
+    if snap.get("stale"):
+        return (f'<p class="warn-note">最新のチェック（{fmt_time(snap["staleAt"])}）は全市場で取得に失敗しました。'
+                f'表示は {fmt_time(snap["checkedAt"])} 時点のものです。</p>')
+    if snap.get("degraded"):
+        names = "・".join(MARKET_LABEL[m] for m in snap["degraded"])
+        return f'<p class="warn-note">{names} の取得に失敗したため、この回はその市場を除いて集計しています（前回比は参考）。</p>'
+    return ""
+
+
 def _card(t: dict, snap: dict) -> str:
     season, cls = SEASON[t["season"]]
     if snap["lowestUnitPrice"] is None:
@@ -76,16 +93,17 @@ def _card(t: dict, snap: dict) -> str:
                 f' ・ 4本 {yen(snap["lowestSetPrice"])}')
     return (f'<a class="card" href="#{t["id"]}"><span class="season {cls}">{season}</span>'
             f'<h3>{E(t["name"])}</h3>{main}<p class="muted">{meta}</p>'
-            f'{diff_badge(snap["lowestUnitPrice"], snap.get("previousLowestUnitPrice"))}</a>')
+            f'{diff_badge(snap["lowestUnitPrice"], snap.get("previousLowestUnitPrice"))}{_warning(snap)}</a>')
 
 
 def _section(t: dict, snap: dict) -> str:
     season, cls = SEASON[t["season"]]
-    link = (f'<a class="btn" href="{E(snap["lowestUrl"])}" target="_blank" rel="noopener">最安の商品ページ ↗</a>'
+    link = (f'<a class="btn" href="{safe_url(snap["lowestUrl"])}" target="_blank" rel="noopener noreferrer">最安の商品ページ ↗</a>'
             if snap["lowestUrl"] else "")
     return f'''
 <section class="target" id="{t["id"]}">
   <div class="head"><span class="season {cls}">{season}</span><h2>{E(t["name"])}</h2></div>
+  {_warning(snap)}
   <div class="board">
     <div><span class="lbl">最安値（1本）</span><b class="big">{yen(snap["lowestUnitPrice"])}</b>
       <span class="muted">{E(snap["lowestStore"] or "")}</span></div>
@@ -114,7 +132,7 @@ def page(latest: dict, history: dict) -> str:
     targets, snaps = latest["targets"], latest["snapshots"]
     cards = "".join(_card(t, snaps[t["id"]]) for t in targets)
     sections = "".join(_section(t, snaps[t["id"]]) for t in targets)
-    data = json.dumps(history.get("targets", {}), ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    data = json.dumps(history.get("targets", {}), ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/").replace("<!--", "<\\!--")
     return TEMPLATE.format(
         size=E(latest["size"]), checked=fmt_time(latest["checkedAt"]),
         cards=cards, sections=sections, data=data, css=CSS, js=JS,
@@ -155,6 +173,7 @@ header{border-bottom:1px solid var(--ink);padding-bottom:16px}
 .offers .n{width:28px;color:var(--dim)}body{overflow-wrap:anywhere}.offers .r{text-align:right;white-space:nowrap}.offers .muted{font-size:12px}
 .mstatus{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}
 .mstatus .ok b{color:var(--ok)}.mstatus .warn b{color:var(--warn)}.mstatus .err b{color:var(--accent)}
+.warn-note{font-size:13px;color:var(--warn);border-left:3px solid var(--warn);padding:4px 10px;margin:10px 0}
 footer{margin-top:56px;border-top:1px solid var(--line);padding-top:16px;font-size:13px;color:var(--dim)}
 """
 
