@@ -234,6 +234,9 @@ TEMPLATE = """<!doctype html>
 <p>集計ルール：サイズと銘柄が一致する新品だけを対象にし、ホイール付き・中古・予約品は除外。ヤフオク!は即決価格のみで入札中の出品は除外。
 1本あたりが妥当な範囲を外れる価格は読み取りミスとして除外しています。</p>
 <p>表示価格はチェック時点のものです。購入前に商品ページで在庫・送料・製造年をご確認ください。</p>
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<span style="margin:15px 15px 15px 15px"><a href="https://developer.yahoo.co.jp/sitemap/">Webサービス by Yahoo! JAPAN</a></span>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
 </footer></div>
 <script type="application/json" id="history">{data}</script>
 <script>{js}</script>

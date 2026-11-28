@@ -75,6 +75,7 @@ def test_render_page_escapes_and_shows_values():
     assert "¥8,500" in page and "前回比 −¥500" in page and "2026/11/28 12:31" in page
     assert "<script>alert(1)</script>" not in page and "&lt;script&gt;" in page
     assert "店&lt;b&gt;" in page and "サイズ違い 2件" in page
+    assert "Webサービス by Yahoo! JAPAN" in page   # Yahoo! API の利用条件（クレジット表示）
 
 
 def test_parsers_skip_malformed_rows():
