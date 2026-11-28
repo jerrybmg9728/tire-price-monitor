@@ -7,7 +7,7 @@
 
 | 部品 | 場所 | 役割 |
 |---|---|---|
-| 定期実行 | `.github/workflows/monitor.yml` | GitHub Actions で毎時31分に実行し、結果をコミット |
+| 定期実行 | `.github/workflows/monitor.yml` | GitHub Actions で1日2回（日本時間 8:31・18:31）実行し、結果をコミット |
 | 設定 | `config.yaml` | 監視対象・検索語・除外語・妥当な単価の範囲 |
 | 取得 | `monitor/sources/*.py` | 市場ごとに出品を取得 |
 | 判定 | `monitor/normalize.py` | サイズ・銘柄・除外語・本数・単価の判定 |
@@ -55,5 +55,5 @@ Amazon の画面を直接読み取る方法は利用規約に反するため使�
 ## 6. 費用
 
 - GitHub Actions：公開リポジトリは無料
-- 楽天・Yahoo!のAPI：無料（呼び出し回数の上限内。毎時3対象×1回で十分に余裕がある）
+- 楽天・Yahoo!のAPI：無料（呼び出し回数の上限内。1日2回×3対象で十分に余裕がある）
 - AIのトークン：使わない

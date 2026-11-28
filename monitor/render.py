@@ -225,7 +225,7 @@ TEMPLATE = """<!doctype html>
 <title>タイヤ価格監視 {size}</title><style>{css}</style></head>
 <body><div class="wrap">
 <header><h1>タイヤ価格監視 <span class="muted">{size}</span></h1>
-<p class="muted">楽天市場・Yahoo!ショッピング・ヤフオク!・Amazon の新品出品を1時間ごとに自動で集計しています。
+<p class="muted">楽天市場・Yahoo!ショッピング・ヤフオク!・Amazon の新品出品を1日2回（朝8時半・夕方18時半ごろ）自動で集計しています。
 価格は税込・1本あたりに換算（送料は含めず、送料無料かどうかを表示）。</p>
 <p><b>データ時点：{checked}</b>（日本時間）</p></header>
 <div class="cards">{cards}</div>

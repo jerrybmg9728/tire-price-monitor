@@ -57,5 +57,5 @@ fetch:
   yahoo_auction_per_page: 50
   request_delay_seconds: 1.5
 
-# 履歴の保存上限（スナップショット数。毎時×3対象で約1年分）
-history_limit: 27000
+# 履歴の保存上限（スナップショット数。1日2回×3対象で約5年分）
+history_limit: 11000

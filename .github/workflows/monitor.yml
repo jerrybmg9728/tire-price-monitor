@@ -2,7 +2,7 @@ name: Tire price monitor
 
 on:
   schedule:
-    - cron: "31 * * * *"    # 毎時31分（UTC表記だが分は同じ）。GitHubの混雑で数分〜十数分遅れることがある
+    - cron: "31 23,9 * * *" # 日本時間 8:31 と 18:31（UTC表記）。GitHubの混雑で数分〜十数分遅れることがある
   workflow_dispatch:         # 手動実行も可
 
 permissions:
